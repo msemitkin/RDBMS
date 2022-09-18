@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 
-class DatabaseManagerTest {
+class InMemoryDatabaseManagerTest {
 
     @Test
     void createDatabase_shouldCreateDatabase_whenSpecifiedNameIsAllowed() {
-        DatabaseManager testManager = new DatabaseManager();
+        InMemoryDatabaseManager testManager = new InMemoryDatabaseManager();
 
         testManager.createDatabase("test");
 
@@ -17,7 +17,7 @@ class DatabaseManagerTest {
 
     @Test
     void createDatabase_shouldThrowException_whenDatabaseWithSuchNameExists() {
-        DatabaseManager testManager = new DatabaseManager();
+        InMemoryDatabaseManager testManager = new InMemoryDatabaseManager();
         testManager.createDatabase("test");
 
         Assertions.assertThrows(IllegalArgumentException.class,
@@ -26,17 +26,17 @@ class DatabaseManagerTest {
 
     @Test
     void createTable_shouldCreateTable_whenDatabaseExists() {
-        DatabaseManager databaseManager = new DatabaseManager();
-        databaseManager.createDatabase("test");
+        InMemoryDatabaseManager inMemoryDatabaseManager = new InMemoryDatabaseManager();
+        inMemoryDatabaseManager.createDatabase("test");
 
-        Assertions.assertDoesNotThrow(() -> databaseManager.createTable("test", "test table"));
+        Assertions.assertDoesNotThrow(() -> inMemoryDatabaseManager.createTable("test", "test table"));
     }
 
     @Test
     void createTable_shouldThrowException_whenDatabaseDoesNotExist() {
-        DatabaseManager databaseManager = new DatabaseManager();
+        InMemoryDatabaseManager inMemoryDatabaseManager = new InMemoryDatabaseManager();
 
         Assertions.assertThrows(IllegalArgumentException.class,
-            () -> databaseManager.createTable("test", "test table"));
+            () -> inMemoryDatabaseManager.createTable("test", "test table"));
     }
 }

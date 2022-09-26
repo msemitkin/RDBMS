@@ -1,8 +1,8 @@
-package ua.knu.csc.it.rdms.column;
+package ua.knu.csc.it.rdms.domain.column;
 
 public enum ColumnType {
     INTEGER,
-    REAL,
+    DOUBLE,
     CHAR,
     STRING,
     ENUM,

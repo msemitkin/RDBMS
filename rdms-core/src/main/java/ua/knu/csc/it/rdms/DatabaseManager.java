@@ -1,6 +1,8 @@
 package ua.knu.csc.it.rdms;
 
 import ua.knu.csc.it.rdms.domain.Row;
+import ua.knu.csc.it.rdms.domain.RowFilter;
+import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 
 import javax.annotation.Nonnull;
@@ -16,7 +18,7 @@ public interface DatabaseManager {
 
     List<Row> selectAllRows(String database, String table);
 
-//    void update(String database, String table, Row rowFilter, Row updatedRow);
+    void update(String database, String table, RowFilter rowFilter, RowModifier rowModifier);
 
     void insert(String database, String table, Row row);
 }

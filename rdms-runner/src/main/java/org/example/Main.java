@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.knu.csc.it.rdms.DatabaseManagerImpl;
 import ua.knu.csc.it.rdms.FileSystemDatabaseManager;
 import ua.knu.csc.it.rdms.domain.Row;
+import ua.knu.csc.it.rdms.domain.RowFilter;
+import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.column.Column;
 import ua.knu.csc.it.rdms.domain.column.ColumnType;
@@ -38,9 +40,16 @@ public class Main {
         databaseManager.createTable(databaseName, new Table(tableName, columns));
         databaseManager.insert(databaseName, tableName,
             new Row(Map.ofEntries(
-                entry(new Column(ColumnType.INTEGER, "ID"), 100500),
+                entry(new Column(ColumnType.INTEGER, "ID"), 10),
                 entry(new Column(ColumnType.STRING, "email"), "test")
             )));
+        RowFilter filter = new RowFilter(Map.ofEntries(
+            entry(new Column(ColumnType.INTEGER, "ID"), value -> (Integer) value > 5)
+        ));
+        RowModifier modifier = new RowModifier(Map.ofEntries(
+            entry(new Column(ColumnType.INTEGER, "ID"), value -> (int) Math.pow((Integer) value, 2))
+        ));
+        databaseManager.update(databaseName, tableName, filter, modifier);
         databaseManager.selectAllRows(databaseName, tableName).forEach(System.out::println);
     }
 }

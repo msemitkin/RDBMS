@@ -96,6 +96,18 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager {
     }
 
     @Override
+    public void deleteTable(String database, String table) {
+        try {
+            Path tableDataPath = getTableDataPath(database, table);
+            Files.delete(tableDataPath);
+            Path tableSchemaPath = getTableSchemaPath(database, table);
+            Files.delete(tableSchemaPath);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
     public TableSchema getTableSchema(String database, String table) {
         Path tableSchemaPath = getTableSchemaPath(database, table);
         try {

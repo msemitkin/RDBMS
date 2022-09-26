@@ -12,7 +12,7 @@ public interface DatabaseManager {
 
     void createTable(@Nonnull String database, Table table);
 
-//    void dropTable(String database, String table);
+    void dropTable(String database, String table);
 
     List<Row> selectAllRows(String database, String table);
 

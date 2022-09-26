@@ -21,4 +21,6 @@ public interface DatabasePersistenceManager {
     void insertRow(String database, String table, Row row);
 
     List<Row> getAllRows(String database, String table);
+
+    void deleteTable(String database, String table);
 }

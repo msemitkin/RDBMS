@@ -35,6 +35,17 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
+    public void dropTable(String database, String table) {
+        if (!databasePersistenceManager.existsDatabase(database)) {
+            throw new IllegalArgumentException("Database %s does not exist".formatted(database));
+        }
+        if (!databasePersistenceManager.existsTable(database, table)) {
+            throw new IllegalArgumentException("Table %s does not exist".formatted(table));
+        }
+        databasePersistenceManager.deleteTable(database, table);
+    }
+
+    @Override
     public void insert(String database, String table, Row row) {
         if (!databasePersistenceManager.existsDatabase(database)) {
             throw new IllegalArgumentException("Database %s does not exist".formatted(database));

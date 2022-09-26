@@ -17,42 +17,28 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void createDatabase(@Nonnull String name) {
-        if (databasePersistenceManager.existsDatabase(name)) {
-            throw new IllegalArgumentException("Database %s already exists".formatted(name));
-        }
+        validateDatabaseDoesNotExist(name);
         databasePersistenceManager.saveDatabase(name);
     }
 
     @Override
     public void createTable(@Nonnull String database, Table table) {
-        if (!databasePersistenceManager.existsDatabase(database)) {
-            throw new IllegalArgumentException("Database %s does not exist".formatted(database));
-        }
-        if (databasePersistenceManager.existsTable(database, table.name())) {
-            throw new IllegalArgumentException("Table %s already exists".formatted(table.name()));
-        }
+        validateDatabaseExists(database);
+        validateTableDoesNotExist(database, table);
         databasePersistenceManager.saveTable(database, table);
     }
 
     @Override
     public void dropTable(String database, String table) {
-        if (!databasePersistenceManager.existsDatabase(database)) {
-            throw new IllegalArgumentException("Database %s does not exist".formatted(database));
-        }
-        if (!databasePersistenceManager.existsTable(database, table)) {
-            throw new IllegalArgumentException("Table %s does not exist".formatted(table));
-        }
+        validateDatabaseExists(database);
+        validateTableExists(database, table);
         databasePersistenceManager.deleteTable(database, table);
     }
 
     @Override
     public void insert(String database, String table, Row row) {
-        if (!databasePersistenceManager.existsDatabase(database)) {
-            throw new IllegalArgumentException("Database %s does not exist".formatted(database));
-        }
-        if (!databasePersistenceManager.existsTable(database, table)) {
-            throw new IllegalArgumentException("Table %s does not exist".formatted(table));
-        }
+        validateDatabaseExists(database);
+        validateTableExists(database, table);
         validateRow(database, table, row);
         databasePersistenceManager.insertRow(database, table, row);
     }
@@ -64,6 +50,33 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public List<Row> selectAllRows(String database, String table) {
+        validateDatabaseExists(database);
+        validateTableExists(database, table);
         return databasePersistenceManager.getAllRows(database, table);
     }
+
+    private void validateDatabaseExists(String database) {
+        if (!databasePersistenceManager.existsDatabase(database)) {
+            throw new IllegalArgumentException("Database %s does not exist".formatted(database));
+        }
+    }
+
+    private void validateDatabaseDoesNotExist(String name) {
+        if (databasePersistenceManager.existsDatabase(name)) {
+            throw new IllegalArgumentException("Database %s already exists".formatted(name));
+        }
+    }
+
+    private void validateTableExists(String database, String table) {
+        if (!databasePersistenceManager.existsTable(database, table)) {
+            throw new IllegalArgumentException("Table %s does not exist".formatted(table));
+        }
+    }
+
+    private void validateTableDoesNotExist(String database, Table table) {
+        if (databasePersistenceManager.existsTable(database, table.name())) {
+            throw new IllegalArgumentException("Table %s already exists".formatted(table.name()));
+        }
+    }
+
 }

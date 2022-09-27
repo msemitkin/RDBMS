@@ -8,7 +8,11 @@ import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.column.Column;
-import ua.knu.csc.it.rdms.domain.column.ColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
+import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
+import ua.knu.csc.it.rdms.validator.ColumnValidator;
+import ua.knu.csc.it.rdms.validator.RowValidator;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,8 +29,13 @@ public class Main {
         Path workingDir = home.resolve("test_" + LocalDateTime.now());
         Files.createDirectory(workingDir);
 
+        FileSystemDatabaseManager databasePersistenceManager =
+            new FileSystemDatabaseManager(workingDir, new ObjectMapper());
         DatabaseManagerImpl databaseManager = new DatabaseManagerImpl(
-            new FileSystemDatabaseManager(workingDir, new ObjectMapper()));
+            databasePersistenceManager,
+            databasePersistenceManager,
+            new RowValidator(new ColumnValidator())
+        );
 
 
         String databaseName = "first";
@@ -34,22 +43,25 @@ public class Main {
 
         databaseManager.createDatabase(databaseName);
         Set<Column> columns = Set.of(
-            new Column(ColumnType.INTEGER, "ID"),
-            new Column(ColumnType.STRING, "email")
+            new Column(new StringColumnType(), "ID"),
+            new Column(new StringColumnType(), "email")
         );
         databaseManager.createTable(databaseName, new Table(tableName, columns));
         databaseManager.insert(databaseName, tableName,
             new Row(Map.ofEntries(
-                entry(new Column(ColumnType.INTEGER, "ID"), 10),
-                entry(new Column(ColumnType.STRING, "email"), "test")
+                entry(new Column(new IntegerColumnType(), "ID"), 10),
+                entry(new Column(new StringColumnType(), "email"), "test")
             )));
         RowFilter filter = new RowFilter(Map.ofEntries(
-            entry(new Column(ColumnType.INTEGER, "ID"), value -> (Integer) value > 5)
+            entry(new Column(new IntegerColumnType(), "ID"), value -> (Integer) value > 5)
         ));
         RowModifier modifier = new RowModifier(Map.ofEntries(
-            entry(new Column(ColumnType.INTEGER, "ID"), value -> (int) Math.pow((Integer) value, 2))
+            entry(new Column(new IntegerColumnType(), "ID"), value -> (int) Math.pow((Integer) value, 2))
         ));
         databaseManager.update(databaseName, tableName, filter, modifier);
         databaseManager.selectAllRows(databaseName, tableName).forEach(System.out::println);
+
+        databaseManager.createEnumeration(databaseName, new Enumeration("booleanValues", Set.of("TRUE", "FALSE")));
+        databaseManager.createEnumeration(databaseName, new Enumeration("booleanValues", Set.of("TRUE", "FALSE")));
     }
 }

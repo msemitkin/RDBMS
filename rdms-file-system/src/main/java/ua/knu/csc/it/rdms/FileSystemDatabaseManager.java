@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
-import ua.knu.csc.it.rdms.domain.column.Enumeration;
+import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 
 import javax.annotation.Nonnull;
@@ -15,8 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class FileSystemDatabaseManager implements DatabasePersistenceManager {
+public class FileSystemDatabaseManager implements DatabasePersistenceManager, EnumerationPersistenceManager {
     private static final String SCHEMA_EXTENSION = ".table.schema.json";
     private static final String DATA_EXTENSION = ".table.data.json";
     private static final String ENUM_EXTENSION = ".enum.json";
@@ -117,9 +120,22 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager {
 
     @Override
     public void createEnumeration(String database, Enumeration enumeration) {
-        Path enumPath = getEnumPath(database, enumeration.name());
+        Path enumPath = getEnumPath(database, enumeration.getName());
         try {
             objectMapper.writeValue(enumPath.toFile(), enumeration);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
+    public Set<Enumeration> getEnumerations(String database) {
+        try (Stream<Path> pathStream = Files
+                .find(basePath.resolve(database), 1, (path, attributes) -> path.endsWith(ENUM_EXTENSION))
+        ) {
+            return pathStream
+                .map(path -> readValue(path, Enumeration.class))
+                .collect(Collectors.toSet());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -158,6 +174,14 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager {
             String objectsSource = String.join("", lines);
             objectMapper.readValue(objectsSource, RowsDto.class);
             return objectMapper.readValue(tablePath.toFile(), RowsDto.class);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    private <T> T readValue(Path path, Class<T> type) {
+        try {
+            return objectMapper.readValue(path.toFile(), type);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

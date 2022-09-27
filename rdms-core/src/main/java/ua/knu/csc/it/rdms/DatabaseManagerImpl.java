@@ -5,17 +5,42 @@ import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
-import ua.knu.csc.it.rdms.domain.column.Enumeration;
+import ua.knu.csc.it.rdms.domain.column.columntype.CharColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.DoubleColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.EmailColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
+import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
+import ua.knu.csc.it.rdms.validator.RowValidator;
 
 import javax.annotation.Nonnull;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DatabaseManagerImpl implements DatabaseManager {
-    private final DatabasePersistenceManager databasePersistenceManager;
+    private static final Set<ColumnType> PRESET_COLUMN_TYPES = Set.of(
+        new IntegerColumnType(),
+        new DoubleColumnType(),
+        new CharColumnType(),
+        new StringColumnType(),
+        new EmailColumnType()
+    );
 
-    public DatabaseManagerImpl(DatabasePersistenceManager databasePersistenceManager) {
+    private final DatabasePersistenceManager databasePersistenceManager;
+    private final EnumerationPersistenceManager enumerationPersistenceManager;
+    private final RowValidator rowValidator;
+
+    public DatabaseManagerImpl(
+        DatabasePersistenceManager databasePersistenceManager,
+        EnumerationPersistenceManager enumerationPersistenceManager,
+        RowValidator rowValidator
+    ) {
         this.databasePersistenceManager = databasePersistenceManager;
+        this.enumerationPersistenceManager = enumerationPersistenceManager;
+        this.rowValidator = rowValidator;
     }
 
     @Override
@@ -34,8 +59,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public void createEnumeration(@Nonnull String database, Enumeration enumeration) {
         validateDatabaseExists(database);
-        if(databasePersistenceManager.enumerationExists(database, enumeration.name())) {
-            throw new IllegalArgumentException("Enumeration %s already exists".formatted(enumeration.name()));
+        if (databasePersistenceManager.enumerationExists(database, enumeration.getName())) {
+            throw new IllegalArgumentException("Enumeration %s already exists".formatted(enumeration.getName()));
         }
         databasePersistenceManager.createEnumeration(database, enumeration);
     }
@@ -55,9 +80,17 @@ public class DatabaseManagerImpl implements DatabaseManager {
         databasePersistenceManager.insertRow(database, table, row);
     }
 
+    @Override
+    public Set<ColumnType> getSupportedColumnTypes(String database) {
+        Set<Enumeration> customColumnTypes = enumerationPersistenceManager.getEnumerations(database);
+        HashSet<ColumnType> columnTypes = new HashSet<>(PRESET_COLUMN_TYPES);
+        columnTypes.addAll(customColumnTypes);
+        return columnTypes;
+    }
+
     private void validateRow(String database, String table, Row row) {
         TableSchema tableSchema = databasePersistenceManager.getTableSchema(database, table);
-        tableSchema.validateRow(row);
+        rowValidator.validateRow(row, tableSchema);
     }
 
     @Override

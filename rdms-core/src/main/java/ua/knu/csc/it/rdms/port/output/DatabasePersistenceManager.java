@@ -3,7 +3,7 @@ package ua.knu.csc.it.rdms.port.output;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
-import ua.knu.csc.it.rdms.domain.column.Enumeration;
+import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 
 import javax.annotation.Nonnull;
 import java.util.List;

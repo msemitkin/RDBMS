@@ -3,6 +3,7 @@ package ua.knu.csc.it.rdms.port.output;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
+import ua.knu.csc.it.rdms.domain.column.Enumeration;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -23,4 +24,8 @@ public interface DatabasePersistenceManager {
     List<Row> getAllRows(String database, String table);
 
     void deleteTable(String database, String table);
+
+    boolean enumerationExists(String database, String name);
+
+    void createEnumeration(String database, Enumeration enumeration);
 }

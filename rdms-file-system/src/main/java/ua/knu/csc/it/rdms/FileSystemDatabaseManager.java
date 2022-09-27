@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
+import ua.knu.csc.it.rdms.domain.column.Enumeration;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 
 import javax.annotation.Nonnull;
@@ -16,8 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileSystemDatabaseManager implements DatabasePersistenceManager {
-    private static final String SCHEMA_EXTENSION = ".schema.json";
-    private static final String DATA_EXTENSION = ".data.json";
+    private static final String SCHEMA_EXTENSION = ".table.schema.json";
+    private static final String DATA_EXTENSION = ".table.data.json";
+    private static final String ENUM_EXTENSION = ".enum.json";
 
     private final Path basePath;
     private final ObjectMapper objectMapper;
@@ -108,6 +110,22 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager {
     }
 
     @Override
+    public boolean enumerationExists(String database, String name) {
+        Path enumPath = getEnumPath(database, name);
+        return Files.exists(enumPath);
+    }
+
+    @Override
+    public void createEnumeration(String database, Enumeration enumeration) {
+        Path enumPath = getEnumPath(database, enumeration.name());
+        try {
+            objectMapper.writeValue(enumPath.toFile(), enumeration);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
     public TableSchema getTableSchema(String database, String table) {
         Path tableSchemaPath = getTableSchemaPath(database, table);
         try {
@@ -123,6 +141,10 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager {
 
     private Path getTableDataPath(String database, String table) {
         return basePath.resolve(database).resolve(table.concat(DATA_EXTENSION));
+    }
+
+    private Path getEnumPath(String database, String enumName) {
+        return basePath.resolve(database).resolve(enumName.concat(ENUM_EXTENSION));
     }
 
 

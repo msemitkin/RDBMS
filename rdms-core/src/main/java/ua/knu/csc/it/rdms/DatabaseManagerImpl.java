@@ -5,6 +5,7 @@ import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
+import ua.knu.csc.it.rdms.domain.column.Enumeration;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 
 import javax.annotation.Nonnull;
@@ -28,6 +29,15 @@ public class DatabaseManagerImpl implements DatabaseManager {
         validateDatabaseExists(database);
         validateTableDoesNotExist(database, table);
         databasePersistenceManager.saveTable(database, table);
+    }
+
+    @Override
+    public void createEnumeration(@Nonnull String database, Enumeration enumeration) {
+        validateDatabaseExists(database);
+        if(databasePersistenceManager.enumerationExists(database, enumeration.name())) {
+            throw new IllegalArgumentException("Enumeration %s already exists".formatted(enumeration.name()));
+        }
+        databasePersistenceManager.createEnumeration(database, enumeration);
     }
 
     @Override

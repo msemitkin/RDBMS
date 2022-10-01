@@ -1,4 +1,4 @@
-package ua.knu.csc.it.rdms;
+package ua.knu.csc.it.rdms.port.output;
 
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 

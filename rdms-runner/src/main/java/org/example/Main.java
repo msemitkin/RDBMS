@@ -1,18 +1,18 @@
 package org.example;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ua.knu.csc.it.rdms.DatabaseManagerImpl;
 import ua.knu.csc.it.rdms.FileSystemDatabaseManager;
-import ua.knu.csc.it.rdms.InsertRowCommand;
+import ua.knu.csc.it.rdms.domain.DatabaseManagerImpl;
 import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.column.Column;
+import ua.knu.csc.it.rdms.domain.column.columntype.EmailColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
-import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
-import ua.knu.csc.it.rdms.validator.ColumnValidator;
-import ua.knu.csc.it.rdms.validator.RowValidator;
+import ua.knu.csc.it.rdms.domain.validator.ColumnValidator;
+import ua.knu.csc.it.rdms.domain.validator.RowValidator;
+import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,13 +44,13 @@ public class Main {
         databaseManager.createDatabase(databaseName);
         Set<Column> columns = Set.of(
             new Column(new IntegerColumnType(), "ID"),
-            new Column(new StringColumnType(), "email")
+            new Column(new EmailColumnType(), "email")
         );
         databaseManager.createTable(databaseName, new Table(tableName, columns));
         databaseManager.insert(databaseName, tableName,
             new InsertRowCommand(Map.ofEntries(
                 entry("ID", 10),
-                entry("email", "test")
+                entry("email", "test@gmail.com")
             )));
         RowFilter filter = new RowFilter(Map.ofEntries(
             entry("ID", value -> (Integer) value > 5)

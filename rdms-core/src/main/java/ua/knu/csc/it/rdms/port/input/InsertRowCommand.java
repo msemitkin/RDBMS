@@ -1,4 +1,4 @@
-package ua.knu.csc.it.rdms;
+package ua.knu.csc.it.rdms.port.input;
 
 import java.util.Map;
 

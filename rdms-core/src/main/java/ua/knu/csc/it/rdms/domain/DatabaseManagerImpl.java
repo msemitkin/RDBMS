@@ -1,10 +1,5 @@
-package ua.knu.csc.it.rdms;
+package ua.knu.csc.it.rdms.domain;
 
-import ua.knu.csc.it.rdms.domain.Row;
-import ua.knu.csc.it.rdms.domain.RowFilter;
-import ua.knu.csc.it.rdms.domain.RowModifier;
-import ua.knu.csc.it.rdms.domain.Table;
-import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.domain.column.Column;
 import ua.knu.csc.it.rdms.domain.column.columntype.CharColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
@@ -13,8 +8,11 @@ import ua.knu.csc.it.rdms.domain.column.columntype.EmailColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
+import ua.knu.csc.it.rdms.port.input.DatabaseManager;
+import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
-import ua.knu.csc.it.rdms.validator.RowValidator;
+import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
+import ua.knu.csc.it.rdms.domain.validator.RowValidator;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;

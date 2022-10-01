@@ -1,6 +1,7 @@
 package ua.knu.csc.it.rdms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;

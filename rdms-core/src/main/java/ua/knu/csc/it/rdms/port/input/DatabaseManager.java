@@ -1,4 +1,4 @@
-package ua.knu.csc.it.rdms;
+package ua.knu.csc.it.rdms.port.input;
 
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.RowFilter;

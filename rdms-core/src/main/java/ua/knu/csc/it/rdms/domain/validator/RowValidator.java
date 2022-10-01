@@ -1,4 +1,4 @@
-package ua.knu.csc.it.rdms.validator;
+package ua.knu.csc.it.rdms.domain.validator;
 
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.TableSchema;

@@ -3,7 +3,7 @@ package org.example;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.knu.csc.it.rdms.DatabaseManagerImpl;
 import ua.knu.csc.it.rdms.FileSystemDatabaseManager;
-import ua.knu.csc.it.rdms.domain.Row;
+import ua.knu.csc.it.rdms.InsertRowCommand;
 import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
@@ -48,9 +48,9 @@ public class Main {
         );
         databaseManager.createTable(databaseName, new Table(tableName, columns));
         databaseManager.insert(databaseName, tableName,
-            new Row(Map.ofEntries(
-                entry(new Column(new IntegerColumnType(), "ID"), 10),
-                entry(new Column(new StringColumnType(), "email"), "test")
+            new InsertRowCommand(Map.ofEntries(
+                entry("ID", 10),
+                entry("email", "test")
             )));
         RowFilter filter = new RowFilter(Map.ofEntries(
             entry(new Column(new IntegerColumnType(), "ID"), value -> (Integer) value > 5)

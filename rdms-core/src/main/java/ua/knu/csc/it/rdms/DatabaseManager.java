@@ -25,7 +25,7 @@ public interface DatabaseManager {
 
     void update(String database, String table, RowFilter rowFilter, RowModifier rowModifier);
 
-    void insert(String database, String table, Row row);
+    void insert(String database, String table, InsertRowCommand row);
 
     Set<ColumnType> getSupportedColumnTypes(String database);
 }

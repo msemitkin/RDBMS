@@ -5,6 +5,7 @@ import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
+import ua.knu.csc.it.rdms.domain.column.Column;
 import ua.knu.csc.it.rdms.domain.column.columntype.CharColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.DoubleColumnType;
@@ -18,7 +19,10 @@ import ua.knu.csc.it.rdms.validator.RowValidator;
 import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toMap;
 
 public class DatabaseManagerImpl implements DatabaseManager {
     private static final Set<ColumnType> PRESET_COLUMN_TYPES = Set.of(
@@ -73,9 +77,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public void insert(String database, String table, Row row) {
+    public void insert(String database, String table, InsertRowCommand insertRowCommand) {
         validateDatabaseExists(database);
         validateTableExists(database, table);
+        TableSchema tableSchema = databasePersistenceManager.getTableSchema(database, table);
+        Row row = toRow(insertRowCommand, tableSchema);
         validateRow(database, table, row);
         databasePersistenceManager.insertRow(database, table, row);
     }
@@ -158,6 +164,13 @@ public class DatabaseManagerImpl implements DatabaseManager {
             .ifPresent(column -> {
                 throw new IllegalArgumentException("Unknown column: %s".formatted(column));
             });
+    }
+
+    private Row toRow(InsertRowCommand insertRowCommand, TableSchema tableSchema) {
+        Map<Column, Object> columns = insertRowCommand.nameToValue().entrySet()
+            .stream()
+            .collect(toMap(entry -> tableSchema.getByName(entry.getKey()), Map.Entry::getValue));
+        return new Row(columns);
     }
 
 }

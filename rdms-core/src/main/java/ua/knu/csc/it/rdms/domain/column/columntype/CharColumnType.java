@@ -12,7 +12,9 @@ public class CharColumnType extends ColumnType {
 
     @Override
     public String toString() {
-        return "CharColumnType{}";
+        return "CharColumnType{" +
+               "typeName='" + typeName + '\'' +
+               '}';
     }
 
 }

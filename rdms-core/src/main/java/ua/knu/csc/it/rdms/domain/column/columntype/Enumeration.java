@@ -8,7 +8,7 @@ public class Enumeration extends ColumnType {
     private final Set<String> allowedValues;
 
     public Enumeration(String name, Set<String> allowedValues) {
-        super("Enumeration");
+        super("ENUMERATION");
         this.name = name;
         this.allowedValues = allowedValues;
     }

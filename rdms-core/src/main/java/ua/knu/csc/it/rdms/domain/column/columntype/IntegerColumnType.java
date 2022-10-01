@@ -13,6 +13,8 @@ public class IntegerColumnType extends ColumnType {
 
     @Override
     public String toString() {
-        return "IntegerColumnType{}";
+        return "IntegerColumnType{" +
+               "typeName='" + typeName + '\'' +
+               '}';
     }
 }

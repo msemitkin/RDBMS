@@ -12,6 +12,8 @@ public class DoubleColumnType extends ColumnType {
 
     @Override
     public String toString() {
-        return "DoubleColumnType{}";
+        return "DoubleColumnType{" +
+               "typeName='" + typeName + '\'' +
+               '}';
     }
 }

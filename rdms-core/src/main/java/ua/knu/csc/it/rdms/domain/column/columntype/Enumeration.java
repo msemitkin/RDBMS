@@ -6,14 +6,11 @@ import java.util.Set;
 public class Enumeration extends ColumnType {
     private final Set<String> allowedValues;
 
-    public Enumeration(String name, Set<String> allowedValues) {
-        super(name);
+    public Enumeration(Set<String> allowedValues) {
+        super("Enumeration");
         this.allowedValues = allowedValues;
     }
 
-    public Set<String> getAllowedValues() {
-        return allowedValues;
-    }
 
 
     @Override

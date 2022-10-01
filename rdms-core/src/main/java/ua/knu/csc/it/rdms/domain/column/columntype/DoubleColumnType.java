@@ -9,4 +9,9 @@ public class DoubleColumnType extends ColumnType {
     public boolean isValid(Object value) {
         return value instanceof Double;
     }
+
+    @Override
+    public String toString() {
+        return "DoubleColumnType{}";
+    }
 }

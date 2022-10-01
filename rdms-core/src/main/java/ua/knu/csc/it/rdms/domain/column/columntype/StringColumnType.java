@@ -9,4 +9,11 @@ public class StringColumnType extends ColumnType {
     public boolean isValid(Object value) {
         return value instanceof String;
     }
+
+    @Override
+    public String toString() {
+        return "StringColumnType{" +
+               "name='" + name + '\'' +
+               '}';
+    }
 }

@@ -13,4 +13,11 @@ public class EmailColumnType extends ColumnType {
     public boolean isValid(Object value) {
         return value instanceof String stringValue && Pattern.matches(EMAIL_REGEXP, stringValue);
     }
+
+    @Override
+    public String toString() {
+        return "EmailColumnType{" +
+               "name='" + name + '\'' +
+               '}';
+    }
 }

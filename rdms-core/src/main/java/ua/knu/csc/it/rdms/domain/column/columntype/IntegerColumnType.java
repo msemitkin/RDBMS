@@ -10,4 +10,9 @@ public class IntegerColumnType extends ColumnType {
     public boolean isValid(Object value) {
         return value instanceof Integer;
     }
+
+    @Override
+    public String toString() {
+        return "IntegerColumnType{}";
+    }
 }

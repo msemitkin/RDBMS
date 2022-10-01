@@ -43,7 +43,7 @@ public class Main {
 
         databaseManager.createDatabase(databaseName);
         Set<Column> columns = Set.of(
-            new Column(new StringColumnType(), "ID"),
+            new Column(new IntegerColumnType(), "ID"),
             new Column(new StringColumnType(), "email")
         );
         databaseManager.createTable(databaseName, new Table(tableName, columns));

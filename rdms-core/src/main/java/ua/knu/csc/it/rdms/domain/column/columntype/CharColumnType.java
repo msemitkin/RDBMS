@@ -9,4 +9,10 @@ public class CharColumnType extends ColumnType {
     public boolean isValid(Object value) {
         return value instanceof Character;
     }
+
+    @Override
+    public String toString() {
+        return "CharColumnType{}";
+    }
+
 }

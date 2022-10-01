@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -147,9 +148,12 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     private void validateCriteria(RowFilter rowFilter, TableSchema tableSchema) {
-        rowFilter.filters().keySet()
+        Set<String> columnNames = tableSchema.columns().stream()
+            .map(Column::name)
+            .collect(Collectors.toSet());
+        rowFilter.nameToFilter().keySet()
             .stream()
-            .filter(column -> !tableSchema.columns().contains(column))
+            .filter(columnName -> !columnNames.contains(columnName))
             .findAny()
             .ifPresent(column -> {
                 throw new IllegalArgumentException("Unknown column: %s".formatted(column));
@@ -157,9 +161,12 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     private void validateRowModifier(RowModifier rowModifier, TableSchema tableSchema) {
+        Set<String> columnNames = tableSchema.columns().stream()
+            .map(Column::name)
+            .collect(Collectors.toSet());
         rowModifier.columnModifiers().keySet()
             .stream()
-            .filter(column -> !tableSchema.columns().contains(column))
+            .filter(column -> !columnNames.contains(column))
             .findAny()
             .ifPresent(column -> {
                 throw new IllegalArgumentException("Unknown column: %s".formatted(column));

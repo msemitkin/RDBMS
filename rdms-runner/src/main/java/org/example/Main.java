@@ -53,15 +53,14 @@ public class Main {
                 entry("email", "test")
             )));
         RowFilter filter = new RowFilter(Map.ofEntries(
-            entry(new Column(new IntegerColumnType(), "ID"), value -> (Integer) value > 5)
+            entry("ID", value -> (Integer) value > 5)
         ));
         RowModifier modifier = new RowModifier(Map.ofEntries(
-            entry(new Column(new IntegerColumnType(), "ID"), value -> (int) Math.pow((Integer) value, 2))
+            entry("ID", value -> (int) Math.pow((Integer) value, 2))
         ));
         databaseManager.update(databaseName, tableName, filter, modifier);
         databaseManager.selectAllRows(databaseName, tableName).forEach(System.out::println);
 
-        databaseManager.createEnumeration(databaseName, new Enumeration("booleanValues", Set.of("TRUE", "FALSE")));
         databaseManager.createEnumeration(databaseName, new Enumeration("booleanValues", Set.of("TRUE", "FALSE")));
     }
 }

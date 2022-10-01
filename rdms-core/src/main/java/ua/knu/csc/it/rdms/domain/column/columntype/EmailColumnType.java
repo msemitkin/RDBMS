@@ -17,7 +17,7 @@ public class EmailColumnType extends ColumnType {
     @Override
     public String toString() {
         return "EmailColumnType{" +
-               "name='" + name + '\'' +
+               "name='" + typeName + '\'' +
                '}';
     }
 }

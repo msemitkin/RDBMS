@@ -6,14 +6,14 @@ import java.util.Objects;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class ColumnType {
-    protected final String name;
+    protected final String typeName;
 
-    protected ColumnType(String name) {
-        this.name = name;
+    protected ColumnType(String typeName) {
+        this.typeName = typeName;
     }
 
-    public String getName() {
-        return name;
+    public String getTypeName() {
+        return typeName;
     }
 
     public abstract boolean isValid(Object value);
@@ -23,18 +23,18 @@ public abstract class ColumnType {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ColumnType that = (ColumnType) o;
-        return Objects.equals(name, that.name);
+        return Objects.equals(typeName, that.typeName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(typeName);
     }
 
     @Override
     public String toString() {
         return "ColumnType{" +
-               "name='" + name + '\'' +
+               "name='" + typeName + '\'' +
                '}';
     }
 }

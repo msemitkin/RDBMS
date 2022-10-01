@@ -7,7 +7,7 @@ public class ColumnValidator {
     void validate(Object value, ColumnType columnType) {
         if (!columnType.isValid(value)) {
             throw new IllegalArgumentException(
-                "%s value is not valid for type %s".formatted(value, columnType.getName()));
+                "%s value is not valid for type %s".formatted(value, columnType.getTypeName()));
         }
     }
 

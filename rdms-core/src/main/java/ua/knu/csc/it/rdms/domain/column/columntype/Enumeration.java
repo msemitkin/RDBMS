@@ -4,13 +4,14 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Enumeration extends ColumnType {
+    private final String name;
     private final Set<String> allowedValues;
 
-    public Enumeration(Set<String> allowedValues) {
+    public Enumeration(String name, Set<String> allowedValues) {
         super("Enumeration");
+        this.name = name;
         this.allowedValues = allowedValues;
     }
-
 
 
     @Override

@@ -13,7 +13,7 @@ public class StringColumnType extends ColumnType {
     @Override
     public String toString() {
         return "StringColumnType{" +
-               "name='" + name + '\'' +
+               "name='" + typeName + '\'' +
                '}';
     }
 }

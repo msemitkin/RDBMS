@@ -120,7 +120,7 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, En
 
     @Override
     public void createEnumeration(String database, Enumeration enumeration) {
-        Path enumPath = getEnumPath(database, enumeration.getName());
+        Path enumPath = getEnumPath(database, enumeration.getTypeName());
         try {
             objectMapper.writeValue(enumPath.toFile(), enumeration);
         } catch (IOException e) {

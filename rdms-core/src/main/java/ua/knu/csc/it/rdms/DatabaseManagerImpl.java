@@ -59,8 +59,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public void createEnumeration(@Nonnull String database, Enumeration enumeration) {
         validateDatabaseExists(database);
-        if (databasePersistenceManager.enumerationExists(database, enumeration.getName())) {
-            throw new IllegalArgumentException("Enumeration %s already exists".formatted(enumeration.getName()));
+        if (databasePersistenceManager.enumerationExists(database, enumeration.getTypeName())) {
+            throw new IllegalArgumentException("Enumeration %s already exists".formatted(enumeration.getTypeName()));
         }
         databasePersistenceManager.createEnumeration(database, enumeration);
     }

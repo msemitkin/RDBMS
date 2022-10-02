@@ -1,12 +1,12 @@
 package ua.knu.csc.it.rdms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
 import ua.knu.csc.it.rdms.domain.Row;
-import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
+import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
+import ua.knu.csc.it.rdms.port.output.SaveTableCommand;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -53,14 +53,14 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, En
     }
 
     @Override
-    public void saveTable(String databaseName, Table table) {
-        Path tableSchemaPath = getTableSchemaPath(databaseName, table.name());
-        Path tableDataPath = getTableDataPath(databaseName, table.name());
+    public void saveTable(String databaseName, SaveTableCommand saveTableCommand) {
+        Path tableSchemaPath = getTableSchemaPath(databaseName, saveTableCommand.name());
+        Path tableDataPath = getTableDataPath(databaseName, saveTableCommand.name());
         try {
             if (Files.notExists(tableSchemaPath)) {
                 Files.createFile(tableSchemaPath);
             }
-            objectMapper.writeValue(tableSchemaPath.toFile(), new TableSchema(table.columns()));
+            objectMapper.writeValue(tableSchemaPath.toFile(), new TableSchema(saveTableCommand.columns()));
             if (Files.notExists(tableDataPath)) {
                 Files.createFile(tableDataPath);
             }
@@ -132,7 +132,7 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, En
     @Override
     public Set<Enumeration> getEnumerations(String database) {
         try (Stream<Path> pathStream = Files
-                .find(basePath.resolve(database), 1, (path, attributes) -> path.endsWith(ENUM_EXTENSION))
+            .find(basePath.resolve(database), 1, (path, attributes) -> path.endsWith(ENUM_EXTENSION))
         ) {
             return pathStream
                 .map(path -> readValue(path, Enumeration.class))

@@ -5,13 +5,11 @@ import ua.knu.csc.it.rdms.FileSystemDatabaseManager;
 import ua.knu.csc.it.rdms.domain.DatabaseManagerImpl;
 import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
-import ua.knu.csc.it.rdms.domain.Table;
-import ua.knu.csc.it.rdms.domain.column.Column;
-import ua.knu.csc.it.rdms.domain.column.columntype.EmailColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
-import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
 import ua.knu.csc.it.rdms.domain.validator.ColumnValidator;
 import ua.knu.csc.it.rdms.domain.validator.RowValidator;
+import ua.knu.csc.it.rdms.port.input.TableColumn;
+import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 
 import java.io.IOException;
@@ -42,11 +40,11 @@ public class Main {
         String tableName = "firsttable";
 
         databaseManager.createDatabase(databaseName);
-        Set<Column> columns = Set.of(
-            new Column(new IntegerColumnType(), "ID"),
-            new Column(new EmailColumnType(), "email")
+        Set<TableColumn> tableTableColumns = Set.of(
+            new TableColumn("INTEGER", "ID"),
+            new TableColumn("EMAIL", "email")
         );
-        databaseManager.createTable(databaseName, new Table(tableName, columns));
+        databaseManager.createTable(databaseName, new CreateTableCommand(tableName, tableTableColumns));
         databaseManager.insert(databaseName, tableName,
             new InsertRowCommand(Map.ofEntries(
                 entry("ID", 10),

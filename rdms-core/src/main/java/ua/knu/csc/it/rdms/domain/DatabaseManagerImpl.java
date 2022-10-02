@@ -3,16 +3,19 @@ package ua.knu.csc.it.rdms.domain;
 import ua.knu.csc.it.rdms.domain.column.Column;
 import ua.knu.csc.it.rdms.domain.column.columntype.CharColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
+import ua.knu.csc.it.rdms.domain.column.columntype.ColumnTypes;
 import ua.knu.csc.it.rdms.domain.column.columntype.DoubleColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.EmailColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
+import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
 import ua.knu.csc.it.rdms.domain.validator.RowValidator;
+import ua.knu.csc.it.rdms.port.output.SaveTableCommand;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -53,10 +56,15 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public void createTable(@Nonnull String database, Table table) {
+    public void createTable(@Nonnull String database, CreateTableCommand createTableCommand) {
         validateDatabaseExists(database);
-        validateTableDoesNotExist(database, table);
-        databasePersistenceManager.saveTable(database, table);
+        validateTableDoesNotExist(database, createTableCommand);
+        ColumnTypes supportedColumnTypes = getSupportedColumnTypes(database);
+        Set<Column> columns = getColumns(createTableCommand, supportedColumnTypes);
+        databasePersistenceManager.saveTable(
+            database,
+            new SaveTableCommand(createTableCommand.name(), columns)
+        );
     }
 
     @Override
@@ -86,11 +94,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public Set<ColumnType> getSupportedColumnTypes(String database) {
+    public ColumnTypes getSupportedColumnTypes(String database) {
         Set<Enumeration> customColumnTypes = enumerationPersistenceManager.getEnumerations(database);
         HashSet<ColumnType> columnTypes = new HashSet<>(PRESET_COLUMN_TYPES);
         columnTypes.addAll(customColumnTypes);
-        return columnTypes;
+        return new ColumnTypes(columnTypes);
     }
 
     private void validateRow(String database, String table, Row row) {
@@ -117,7 +125,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
             .map(row -> rowFilter.matches(row) ? row.modify(rowModifier) : row)
             .toList();
         databasePersistenceManager.deleteTable(database, table);
-        databasePersistenceManager.saveTable(database, new Table(table, tableSchema.columns()));
+        databasePersistenceManager.saveTable(database, new SaveTableCommand(table, tableSchema.columns()));
         updatedRows.forEach(row -> databasePersistenceManager.insertRow(database, table, row));
     }
 
@@ -135,13 +143,14 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     private void validateTableExists(String database, String table) {
         if (!databasePersistenceManager.existsTable(database, table)) {
-            throw new IllegalArgumentException("Table %s does not exist".formatted(table));
+            throw new IllegalArgumentException("SaveTableCommand %s does not exist".formatted(table));
         }
     }
 
-    private void validateTableDoesNotExist(String database, Table table) {
-        if (databasePersistenceManager.existsTable(database, table.name())) {
-            throw new IllegalArgumentException("Table %s already exists".formatted(table.name()));
+    private void validateTableDoesNotExist(String database, CreateTableCommand createTableCommand) {
+        if (databasePersistenceManager.existsTable(database, createTableCommand.name())) {
+            throw new IllegalArgumentException("SaveTableCommand %s already exists"
+                .formatted(createTableCommand.name()));
         }
     }
 
@@ -169,6 +178,19 @@ public class DatabaseManagerImpl implements DatabaseManager {
             .ifPresent(column -> {
                 throw new IllegalArgumentException("Unknown column: %s".formatted(column));
             });
+    }
+
+    private Set<Column> getColumns(
+        CreateTableCommand createTableCommand,
+        ColumnTypes supportedColumnTypes
+    ) {
+        return createTableCommand.tableColumns().stream()
+            .map(column -> {
+                String columnName = column.name();
+                ColumnType columnType = supportedColumnTypes.getByName(column.type());
+                return new Column(columnType, columnName);
+            })
+            .collect(Collectors.toSet());
     }
 
     private Row toRow(InsertRowCommand insertRowCommand, TableSchema tableSchema) {

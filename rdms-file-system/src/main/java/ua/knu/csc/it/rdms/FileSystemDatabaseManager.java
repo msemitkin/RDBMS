@@ -1,8 +1,8 @@
 package ua.knu.csc.it.rdms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
-import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
@@ -37,11 +37,16 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, Cu
     ) {
         this.basePath = basePath;
         this.objectMapper = objectMapper;
-        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+        postInit();
+    }
+
+    private void postInit() {
+        BasicPolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
             .allowIfSubType("ua.knu.csc.it.rdms.domain.column.columntype")
             .allowIfSubType("java.util")
             .build();
-        objectMapper.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL);
+        objectMapper.activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL);
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     @Override

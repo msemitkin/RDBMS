@@ -1,10 +1,7 @@
 package ua.knu.csc.it.rdms.domain.column.columntype;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import java.util.Objects;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class ColumnType {
     protected final String typeName;
 

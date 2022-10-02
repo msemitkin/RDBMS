@@ -8,9 +8,9 @@ import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.domain.validator.ColumnValidator;
 import ua.knu.csc.it.rdms.domain.validator.RowValidator;
-import ua.knu.csc.it.rdms.port.input.TableColumn;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
+import ua.knu.csc.it.rdms.port.input.TableColumn;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,15 +40,24 @@ public class Main {
         String tableName = "firsttable";
 
         databaseManager.createDatabase(databaseName);
-        Set<TableColumn> tableTableColumns = Set.of(
-            new TableColumn("INTEGER", "ID"),
-            new TableColumn("EMAIL", "email")
+
+        databaseManager.createEnumeration(
+            databaseName,
+            new Enumeration("BOOLEANVALUE", Set.of("TRUE", "FALSE"))
         );
-        databaseManager.createTable(databaseName, new CreateTableCommand(tableName, tableTableColumns));
+
+        Set<TableColumn> tableColumns = Set.of(
+            new TableColumn("INTEGER", "ID"),
+            new TableColumn("EMAIL", "email"),
+            new TableColumn("BOOLEANVALUE", "true_or_false")
+        );
+        databaseManager.createTable(databaseName, new CreateTableCommand(tableName, tableColumns));
+
         databaseManager.insert(databaseName, tableName,
             new InsertRowCommand(Map.ofEntries(
                 entry("ID", 10),
-                entry("email", "test@gmail.com")
+                entry("email", "test@gmail.com"),
+                entry("true_or_false", "TRUE")
             )));
         RowFilter filter = new RowFilter(Map.ofEntries(
             entry("ID", value -> (Integer) value > 5)
@@ -58,7 +67,5 @@ public class Main {
         ));
         databaseManager.update(databaseName, tableName, filter, modifier);
         databaseManager.selectAllRows(databaseName, tableName).forEach(System.out::println);
-
-        databaseManager.createEnumeration(databaseName, new Enumeration("booleanValues", Set.of("TRUE", "FALSE")));
     }
 }

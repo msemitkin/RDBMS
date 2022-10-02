@@ -1,16 +1,28 @@
 package ua.knu.csc.it.rdms.domain.column.columntype;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Objects;
 import java.util.Set;
 
 public class Enumeration extends ColumnType {
     private final Set<String> allowedValues;
 
-    public Enumeration(String name, Set<String> allowedValues) {
-        super(name);
+    @JsonCreator
+    public Enumeration(
+        @JsonProperty("typeName") String typeName,
+        @JsonProperty("allowedValues") Set<String> allowedValues
+    ) {
+        super(typeName);
         this.allowedValues = allowedValues;
     }
 
+
+    //required for serialization
+    public Set<String> getAllowedValues() {
+        return allowedValues;
+    }
 
     @Override
     public boolean isValid(Object value) {

@@ -1,5 +1,8 @@
 package ua.knu.csc.it.rdms.domain.column.columntype;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.Comparator;
 import java.util.Objects;
 
 public abstract class ColumnType {
@@ -14,6 +17,9 @@ public abstract class ColumnType {
     }
 
     public abstract boolean isValid(Object value);
+
+    @JsonIgnore
+    public abstract Comparator<Object> getComparator();
 
     @Override
     public boolean equals(Object o) {

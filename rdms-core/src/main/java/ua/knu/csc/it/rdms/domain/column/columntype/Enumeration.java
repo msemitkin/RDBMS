@@ -3,6 +3,7 @@ package ua.knu.csc.it.rdms.domain.column.columntype;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Set;
 
@@ -27,6 +28,15 @@ public class Enumeration extends ColumnType {
     @Override
     public boolean isValid(Object value) {
         return value instanceof String stringValue && allowedValues.contains(stringValue);
+    }
+
+    @Override
+    public Comparator<Object> getComparator() {
+        return (o1, o2) -> {
+            String stringValue1 = (String) o1;
+            String stringValue2 = (String) o2;
+            return stringValue1.compareTo(stringValue2);
+        };
     }
 
     @Override

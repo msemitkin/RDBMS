@@ -15,14 +15,14 @@ public record Row(Map<Column, Object> values) {
         return new Row(values);
     }
 
-    private Column getColumnByColumnName(String columnName) {
+    public Column getColumnByColumnName(String columnName) {
         return values.keySet().stream()
             .filter(o -> o.name().equals(columnName))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("Invalid column name: %s".formatted(columnName)));
     }
 
-    private Object getValueByColumnName(String columnName) {
+    public Object getValueByColumnName(String columnName) {
         return values.entrySet().stream()
             .filter(columnToValue -> columnToValue.getKey().name().equals(columnName))
             .map(Map.Entry::getValue)

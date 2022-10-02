@@ -5,6 +5,8 @@ import ua.knu.csc.it.rdms.FileSystemDatabaseManager;
 import ua.knu.csc.it.rdms.domain.DatabaseManagerImpl;
 import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
+import ua.knu.csc.it.rdms.domain.SortDirection;
+import ua.knu.csc.it.rdms.domain.Sorting;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.domain.validator.ColumnValidator;
 import ua.knu.csc.it.rdms.domain.validator.RowValidator;
@@ -58,7 +60,23 @@ public class Main {
                 entry("ID", 10),
                 entry("email", "test@gmail.com"),
                 entry("true_or_false", "TRUE")
-            )));
+            ))
+        );
+        databaseManager.insert(databaseName, tableName,
+            new InsertRowCommand(Map.ofEntries(
+                entry("ID", 30),
+                entry("email", "test@gmail.com"),
+                entry("true_or_false", "TRUE")
+            ))
+        );
+        databaseManager.insert(databaseName, tableName,
+            new InsertRowCommand(Map.ofEntries(
+                entry("ID", 20),
+                entry("email", "test@gmail.com"),
+                entry("true_or_false", "TRUE")
+            ))
+        );
+
         RowFilter filter = new RowFilter(Map.ofEntries(
             entry("ID", value -> (Integer) value > 5)
         ));
@@ -66,6 +84,7 @@ public class Main {
             entry("ID", value -> (int) Math.pow((Integer) value, 2))
         ));
         databaseManager.update(databaseName, tableName, filter, modifier);
-        databaseManager.selectAllRows(databaseName, tableName).forEach(System.out::println);
+        databaseManager.selectAllRows(databaseName, tableName, new Sorting("ID", SortDirection.DESC))
+            .forEach(System.out::println);
     }
 }

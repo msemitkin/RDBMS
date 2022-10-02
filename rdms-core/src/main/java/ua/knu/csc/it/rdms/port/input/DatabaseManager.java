@@ -3,6 +3,7 @@ package ua.knu.csc.it.rdms.port.input;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
+import ua.knu.csc.it.rdms.domain.Sorting;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnTypes;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 
@@ -19,7 +20,7 @@ public interface DatabaseManager {
 
     void dropTable(String database, String table);
 
-    List<Row> selectAllRows(String database, String table);
+    List<Row> selectAllRows(String database, String table, Sorting sorting);
 
     void update(String database, String table, RowFilter rowFilter, RowModifier rowModifier);
 

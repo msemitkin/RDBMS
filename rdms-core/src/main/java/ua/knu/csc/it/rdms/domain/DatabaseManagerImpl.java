@@ -9,15 +9,16 @@ import ua.knu.csc.it.rdms.domain.column.columntype.EmailColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.domain.column.columntype.IntegerColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
+import ua.knu.csc.it.rdms.domain.validator.RowValidator;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
-import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 import ua.knu.csc.it.rdms.port.output.CustomColumnTypePersistenceManager;
-import ua.knu.csc.it.rdms.domain.validator.RowValidator;
+import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 import ua.knu.csc.it.rdms.port.output.SaveTableCommand;
 
 import javax.annotation.Nonnull;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -107,10 +108,16 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
-    public List<Row> selectAllRows(String database, String table) {
+    public List<Row> selectAllRows(String database, String table, Sorting sorting) {
         validateDatabaseExists(database);
         validateTableExists(database, table);
-        return databasePersistenceManager.getAllRows(database, table);
+        List<Row> rows = databasePersistenceManager.getAllRows(database, table);
+        Column sortingColumn = databasePersistenceManager.getTableSchema(database, table)
+            .getByName(sorting.column());
+        Comparator<Row> rowComparator = getRowComparator(sortingColumn);
+        return rows.stream()
+            .sorted(sorting.direction() == SortDirection.ASC ? rowComparator : rowComparator.reversed())
+            .toList();
     }
 
     @Override
@@ -198,6 +205,15 @@ public class DatabaseManagerImpl implements DatabaseManager {
             .stream()
             .collect(toMap(entry -> tableSchema.getByName(entry.getKey()), Map.Entry::getValue));
         return new Row(columns);
+    }
+
+    private Comparator<Row> getRowComparator(Column sortingColumn) {
+        return (o1, o2) -> {
+            Comparator<Object> columnComparator = sortingColumn.type().getComparator();
+            Object value1 = o1.getValueByColumnName(sortingColumn.name());
+            Object value2 = o2.getValueByColumnName(sortingColumn.name());
+            return columnComparator.compare(value1, value2);
+        };
     }
 
 }

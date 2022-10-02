@@ -4,12 +4,10 @@ import java.util.Objects;
 import java.util.Set;
 
 public class Enumeration extends ColumnType {
-    private final String name;
     private final Set<String> allowedValues;
 
     public Enumeration(String name, Set<String> allowedValues) {
-        super("ENUMERATION");
-        this.name = name;
+        super(name);
         this.allowedValues = allowedValues;
     }
 
@@ -37,7 +35,7 @@ public class Enumeration extends ColumnType {
     public String toString() {
         return "Enumeration{" +
                "allowedValues=" + allowedValues +
-               ", name='" + name + '\'' +
+               ", typeName='" + typeName + '\'' +
                '}';
     }
 }

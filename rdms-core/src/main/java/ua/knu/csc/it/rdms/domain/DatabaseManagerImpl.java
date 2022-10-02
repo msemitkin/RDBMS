@@ -13,7 +13,7 @@ import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
-import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
+import ua.knu.csc.it.rdms.port.output.CustomColumnTypePersistenceManager;
 import ua.knu.csc.it.rdms.domain.validator.RowValidator;
 import ua.knu.csc.it.rdms.port.output.SaveTableCommand;
 
@@ -36,16 +36,16 @@ public class DatabaseManagerImpl implements DatabaseManager {
     );
 
     private final DatabasePersistenceManager databasePersistenceManager;
-    private final EnumerationPersistenceManager enumerationPersistenceManager;
+    private final CustomColumnTypePersistenceManager customColumnTypePersistenceManager;
     private final RowValidator rowValidator;
 
     public DatabaseManagerImpl(
         DatabasePersistenceManager databasePersistenceManager,
-        EnumerationPersistenceManager enumerationPersistenceManager,
+        CustomColumnTypePersistenceManager customColumnTypePersistenceManager,
         RowValidator rowValidator
     ) {
         this.databasePersistenceManager = databasePersistenceManager;
-        this.enumerationPersistenceManager = enumerationPersistenceManager;
+        this.customColumnTypePersistenceManager = customColumnTypePersistenceManager;
         this.rowValidator = rowValidator;
     }
 
@@ -95,7 +95,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public ColumnTypes getSupportedColumnTypes(String database) {
-        Set<Enumeration> customColumnTypes = enumerationPersistenceManager.getEnumerations(database);
+        Set<ColumnType> customColumnTypes = customColumnTypePersistenceManager.getCustomColumnTypes(database);
         HashSet<ColumnType> columnTypes = new HashSet<>(PRESET_COLUMN_TYPES);
         columnTypes.addAll(customColumnTypes);
         return new ColumnTypes(columnTypes);

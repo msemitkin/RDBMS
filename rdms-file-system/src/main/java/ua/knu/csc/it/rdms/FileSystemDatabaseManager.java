@@ -3,9 +3,10 @@ package ua.knu.csc.it.rdms;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.TableSchema;
+import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
-import ua.knu.csc.it.rdms.port.output.EnumerationPersistenceManager;
+import ua.knu.csc.it.rdms.port.output.CustomColumnTypePersistenceManager;
 import ua.knu.csc.it.rdms.port.output.SaveTableCommand;
 
 import javax.annotation.Nonnull;
@@ -20,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class FileSystemDatabaseManager implements DatabasePersistenceManager, EnumerationPersistenceManager {
+public class FileSystemDatabaseManager implements DatabasePersistenceManager, CustomColumnTypePersistenceManager {
     private static final String SCHEMA_EXTENSION = ".table.schema.json";
     private static final String DATA_EXTENSION = ".table.data.json";
     private static final String ENUM_EXTENSION = ".enum.json";
@@ -130,12 +131,12 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, En
     }
 
     @Override
-    public Set<Enumeration> getEnumerations(String database) {
+    public Set<ColumnType> getCustomColumnTypes(String database) {
         try (Stream<Path> pathStream = Files
-            .find(basePath.resolve(database), 1, (path, attributes) -> path.endsWith(ENUM_EXTENSION))
+            .find(basePath.resolve(database), 1, (path, attributes) -> path.toString().endsWith(ENUM_EXTENSION))
         ) {
             return pathStream
-                .map(path -> readValue(path, Enumeration.class))
+                .map(path -> readValue(path, ColumnType.class))
                 .collect(Collectors.toSet());
         } catch (IOException e) {
             throw new UncheckedIOException(e);

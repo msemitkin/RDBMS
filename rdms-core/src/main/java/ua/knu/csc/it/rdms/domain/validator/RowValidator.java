@@ -1,5 +1,6 @@
 package ua.knu.csc.it.rdms.domain.validator;
 
+import org.springframework.stereotype.Component;
 import ua.knu.csc.it.rdms.domain.Row;
 import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.domain.column.Column;
@@ -7,6 +8,7 @@ import ua.knu.csc.it.rdms.domain.column.Column;
 import javax.annotation.Nonnull;
 import java.util.Set;
 
+@Component
 public class RowValidator {
     private final ColumnValidator columnValidator;
 

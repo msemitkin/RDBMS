@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body>
+<div th:if="${databasesFound == true}">
+    <table>
+        <tbody>
+        <tr th:each="database: ${databases}">
+            <td>
+                <a th:href="@{'/databases/' + ${database.name}}" th:text="${database.name}"></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div th:unless="${databasesFound == true}">
+    No databases
+</div>
+</body>
+</html>

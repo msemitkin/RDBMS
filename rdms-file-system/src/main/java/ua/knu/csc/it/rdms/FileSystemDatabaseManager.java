@@ -1,9 +1,9 @@
 package ua.knu.csc.it.rdms;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import ua.knu.csc.it.rdms.domain.Database;
 import ua.knu.csc.it.rdms.domain.Row;
+import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
@@ -37,16 +37,6 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, Cu
     ) {
         this.basePath = basePath;
         this.objectMapper = objectMapper;
-        postInit();
-    }
-
-    private void postInit() {
-        BasicPolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
-            .allowIfSubType("ua.knu.csc.it.rdms.domain.column.columntype")
-            .allowIfSubType("java.util")
-            .build();
-        objectMapper.activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL);
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
     @Override
@@ -63,6 +53,22 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, Cu
     @Override
     public boolean existsDatabase(String name) {
         return Files.exists(basePath.resolve(name));
+    }
+
+    @Override
+    public List<Table> getTables(String database) {
+        Path databasePath = basePath.resolve(database);
+        try (Stream<Path> walk = Files.walk(databasePath, 1)) {
+            return walk.skip(1)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .filter(fileName -> fileName.endsWith(SCHEMA_EXTENSION))
+                .map(name -> name.replace(SCHEMA_EXTENSION, ""))
+                .map(Table::new)
+                .toList();
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
@@ -137,6 +143,20 @@ public class FileSystemDatabaseManager implements DatabasePersistenceManager, Cu
         Path enumPath = getEnumPath(database, enumeration.getTypeName());
         try {
             objectMapper.writeValue(enumPath.toFile(), enumeration);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Override
+    public List<Database> getDatabases() {
+        try (Stream<Path> walk = Files.find(basePath, 1, (path, attr) -> attr.isDirectory())) {
+            return walk
+                .skip(1)
+                .map(Path::getFileName)
+                .map(Path::toString)
+                .map(Database::new)
+                .toList();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

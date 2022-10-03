@@ -1,5 +1,6 @@
 package ua.knu.csc.it.rdms.domain;
 
+import org.springframework.stereotype.Service;
 import ua.knu.csc.it.rdms.domain.column.Column;
 import ua.knu.csc.it.rdms.domain.column.columntype.CharColumnType;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
+@Service
 public class DatabaseManagerImpl implements DatabaseManager {
     private static final Set<ColumnType> PRESET_COLUMN_TYPES = Set.of(
         new IntegerColumnType(),
@@ -51,6 +53,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
+    public List<Database> getDatabases() {
+        return databasePersistenceManager.getDatabases();
+    }
+
+    @Override
     public void createDatabase(@Nonnull String name) {
         validateDatabaseDoesNotExist(name);
         databasePersistenceManager.saveDatabase(name);
@@ -69,6 +76,11 @@ public class DatabaseManagerImpl implements DatabaseManager {
     }
 
     @Override
+    public List<Table> getTables(String database) {
+        return databasePersistenceManager.getTables(database);
+    }
+
+    @Override
     public void createEnumeration(@Nonnull String database, Enumeration enumeration) {
         validateDatabaseExists(database);
         if (databasePersistenceManager.enumerationExists(database, enumeration.getTypeName())) {
@@ -82,6 +94,16 @@ public class DatabaseManagerImpl implements DatabaseManager {
         validateDatabaseExists(database);
         validateTableExists(database, table);
         databasePersistenceManager.deleteTable(database, table);
+    }
+
+    @Override
+    public TableSchema getTableSchema(String database, String table) {
+        return databasePersistenceManager.getTableSchema(database, table);
+    }
+
+    @Override
+    public List<Row> selectAllRows(String database, String table) {
+        return databasePersistenceManager.getAllRows(database, table);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package ua.knu.csc.it.rdms.domain.validator;
 
+import org.springframework.stereotype.Component;
 import ua.knu.csc.it.rdms.domain.column.columntype.ColumnType;
 
+@Component
 public class ColumnValidator {
 
     public void validate(Object value, ColumnType columnType) {

@@ -1,6 +1,8 @@
 package ua.knu.csc.it.rdms.port.output;
 
+import ua.knu.csc.it.rdms.domain.Database;
 import ua.knu.csc.it.rdms.domain.Row;
+import ua.knu.csc.it.rdms.domain.Table;
 import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
 
@@ -11,6 +13,8 @@ public interface DatabasePersistenceManager {
     void saveDatabase(@Nonnull String name);
 
     boolean existsDatabase(String name);
+
+    List<Table> getTables(String database);
 
     void saveTable(String databaseName, SaveTableCommand saveTableCommand);
 
@@ -27,4 +31,6 @@ public interface DatabasePersistenceManager {
     boolean enumerationExists(String database, String name);
 
     void createEnumeration(String database, Enumeration enumeration);
+
+    List<Database> getDatabases();
 }

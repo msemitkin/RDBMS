@@ -1,43 +1,38 @@
-package org.example;
+package ua.knu.csc.it.rdms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ua.knu.csc.it.rdms.FileSystemDatabaseManager;
-import ua.knu.csc.it.rdms.domain.DatabaseManagerImpl;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.SortDirection;
 import ua.knu.csc.it.rdms.domain.Sorting;
 import ua.knu.csc.it.rdms.domain.column.columntype.Enumeration;
-import ua.knu.csc.it.rdms.domain.validator.ColumnValidator;
-import ua.knu.csc.it.rdms.domain.validator.RowValidator;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
+import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 import ua.knu.csc.it.rdms.port.input.TableColumn;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Set;
 
 import static java.util.Map.entry;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        Path home = Path.of(System.getProperty("user.home"));
-        Path workingDir = home.resolve("test_" + LocalDateTime.now());
-        Files.createDirectory(workingDir);
 
-        FileSystemDatabaseManager databasePersistenceManager =
-            new FileSystemDatabaseManager(workingDir, new ObjectMapper());
-        DatabaseManagerImpl databaseManager = new DatabaseManagerImpl(
-            databasePersistenceManager,
-            databasePersistenceManager,
-            new RowValidator(new ColumnValidator())
-        );
+@SpringBootApplication
+public class Main implements CommandLineRunner {
+    private final DatabaseManager databaseManager;
 
+    public Main(DatabaseManager databaseManager) {
+        this.databaseManager = databaseManager;
+    }
 
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class, args);
+    }
+
+    @Override
+    public void run(String... args) {
         String databaseName = "first";
         String tableName = "firsttable";
 

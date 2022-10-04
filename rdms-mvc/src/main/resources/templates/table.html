@@ -10,6 +10,9 @@
     </style>
 </head>
 <body>
+<form th:action="@{'/databases/' + ${databaseName} + '/tables/' + ${tableName} + '/delete'}" th:method="post">
+    <button type="submit">Drop table</button>
+</form>
 <table>
     <thead>
     <tr>

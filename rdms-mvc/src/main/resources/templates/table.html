@@ -13,6 +13,16 @@
 <form th:action="@{'/databases/' + ${databaseName} + '/tables/' + ${tableName} + '/delete'}" th:method="post">
     <button type="submit">Drop table</button>
 </form>
+<form th:action="@{'/databases/' + ${databaseName}+ '/tables/' + ${tableName}}" th:method="get">
+    Sort by
+    <select name="sortingColumn">
+        <option th:each="option: ${sortingColumnOptions}" th:text="${option}"></option>
+    </select>
+    <select name="sortDirection">
+        <option th:each="option: ${sortingDirectionOptions}" th:text="${option}"></option>
+    </select>
+    <button type="submit">Sort</button>
+</form>
 <table>
     <thead>
     <tr>

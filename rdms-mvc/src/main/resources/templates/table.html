@@ -23,10 +23,23 @@
     </select>
     <button type="submit">Sort</button>
 </form>
+<form th:action="@{'/databases/' + ${databaseName} + '/tables/' + ${tableName} + '/insert'}" method="post">
+    <table>
+        <tr>
+            <td th:each="column : ${columns}" style="width: 200px">
+                <span th:text="${column.name}"></span>
+                <input th:name="${column.name}" type="text">
+            </td>
+            <td>
+                <button type="submit">Insert</button>
+            </td>
+        </tr>
+    </table>
+</form>
 <table>
     <thead>
     <tr>
-        <td th:each="column: ${columns}" th:text="${column.name}"></td>
+        <td th:each="column: ${columns}" th:text="${column.name}" style="width: 200px"></td>
     </tr>
     </thead>
     <tbody>

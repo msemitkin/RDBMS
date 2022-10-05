@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.emptyList;
 import static java.util.Map.entry;
 import static org.mockito.Mockito.when;
 
@@ -101,4 +102,36 @@ class DatabaseManagerImplTest {
             rows
         );
     }
+
+    @Test
+    void selectAllRows_shouldThrowException_whenSpecifiedNonExistingSortingColumn() {
+        String databaseName = "test database";
+        String tableName = "test table";
+
+        when(databasePersistenceManager.existsDatabase(databaseName)).thenReturn(true);
+        when(databasePersistenceManager.existsTable(databaseName, tableName)).thenReturn(true);
+        when(databasePersistenceManager.getTableSchema(databaseName, tableName)).thenReturn(
+            new TableSchema(Set.of(
+                new Column(new IntegerColumnType(), "id"),
+                new Column(new StringColumnType(), "name")
+            )));
+        when(databasePersistenceManager.getAllRows(databaseName, tableName)).thenReturn(emptyList());
+        Sorting sorting = new Sorting("abc", SortDirection.DESC);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> databaseManager
+            .selectAllRows(databaseName, tableName, sorting));
+    }
+
+    @Test
+    void selectAllRows_shouldThrowException_whenDatabaseDoesNotExist() {
+        String databaseName = "test database";
+        String tableName = "test table";
+
+        when(databasePersistenceManager.existsDatabase(databaseName)).thenReturn(false);
+
+        Sorting sorting = new Sorting("abc", SortDirection.DESC);
+        Assertions.assertThrows(DatabaseDoesNotExistException.class, () -> databaseManager
+            .selectAllRows(databaseName, tableName, sorting));
+    }
+
 }

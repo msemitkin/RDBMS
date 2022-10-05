@@ -160,7 +160,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     private void validateDatabaseExists(String database) {
         if (!databasePersistenceManager.existsDatabase(database)) {
-            throw new IllegalArgumentException("Database %s does not exist".formatted(database));
+            throw new DatabaseDoesNotExistException("Database %s does not exist".formatted(database));
         }
     }
 

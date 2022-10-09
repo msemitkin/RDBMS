@@ -8,8 +8,28 @@
             border-collapse: collapse;
         }
     </style>
+    <script>
+        function onClick() {
+            var ul = document.getElementById("list");
+            var li = document.createElement("li");
+            let input = document.createElement("input");
+            input.name = 'value'
+            li.appendChild(input);
+            ul.appendChild(li);
+        }
+    </script>
 </head>
 <body>
+<form th:action="@{'/databases/' + ${database} + '/enumerations'}" method="post">
+    Create enumeration:<br>
+    Name: <input name="name" type="text" required>
+    <ul id="list"></ul>
+    <button type="button" onclick="onClick()">+</button>
+    <br>
+    <button type="submit">Save</button>
+
+</form>
+
 <div th:if="${tables.isEmpty()}">
     No tables found
 </div>

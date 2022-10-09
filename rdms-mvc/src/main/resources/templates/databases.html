@@ -10,6 +10,10 @@
     </style>
 </head>
 <body>
+<form th:object="${createDatabaseDto}" action="/databases" method="post">
+    Name: <input type="text" th:field="*{name}">
+    <button>Create database</button>
+</form>
 <div th:if="${databasesFound == true}">
     <table>
         <tbody>

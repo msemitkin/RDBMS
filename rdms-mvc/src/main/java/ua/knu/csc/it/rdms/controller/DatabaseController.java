@@ -3,9 +3,12 @@ package ua.knu.csc.it.rdms.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import ua.knu.csc.it.rdms.domain.Database;
 import ua.knu.csc.it.rdms.domain.Table;
+import ua.knu.csc.it.rdms.dto.CreateDatabaseDto;
 import ua.knu.csc.it.rdms.dto.DatabaseDto;
 import ua.knu.csc.it.rdms.dto.TableDto;
 import ua.knu.csc.it.rdms.mapper.DatabaseMapper;
@@ -35,7 +38,16 @@ public class DatabaseController {
             .toList();
         model.addAttribute("databases", databaseDtos);
         model.addAttribute("databasesFound", !databaseDtos.isEmpty());
+        model.addAttribute("createDatabaseDto", new CreateDatabaseDto());
         return "databases";
+    }
+
+    @PostMapping("databases")
+    public String createDatabase(
+        @ModelAttribute("createDatabaseDto") CreateDatabaseDto createDatabaseDto
+    ) {
+        databaseManager.createDatabase(createDatabaseDto.getName());
+        return "redirect:/databases";
     }
 
     @GetMapping("databases/{name}")

@@ -166,7 +166,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     private void validateDatabaseDoesNotExist(String name) {
         if (databasePersistenceManager.existsDatabase(name)) {
-            throw new IllegalArgumentException("Database %s already exists".formatted(name));
+            throw new DatabaseAlreadyExistsException(name);
         }
     }
 
@@ -178,8 +178,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     private void validateTableDoesNotExist(String database, CreateTableCommand createTableCommand) {
         if (databasePersistenceManager.existsTable(database, createTableCommand.name())) {
-            throw new IllegalArgumentException("SaveTableCommand %s already exists"
-                .formatted(createTableCommand.name()));
+            throw new TableAlreadyExistsException(createTableCommand.name());
         }
     }
 

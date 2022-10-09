@@ -7,9 +7,13 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+
+        form {
+            margin: 15px;
+        }
     </style>
     <script>
-        function onClick() {
+        function enumOnClick() {
             var ul = document.getElementById("list");
             var li = document.createElement("li");
             let input = document.createElement("input");
@@ -17,6 +21,26 @@
             li.appendChild(input);
             ul.appendChild(li);
         }
+
+        function tableOnClick() {
+            let body = document.getElementById("tableBody");
+            let row = document.createElement("tr");
+            let nameColumn = document.createElement("td");
+            let nameInput = document.createElement("input");
+            nameInput.name = 'columnName'
+            nameColumn.appendChild(nameInput)
+            row.appendChild(nameColumn)
+
+            let typeColumn = document.createElement("td");
+            let typeInput = document.createElement("input");
+            typeInput.name = 'columnType'
+            typeColumn.appendChild(typeInput)
+            row.appendChild(typeColumn)
+            row.appendChild(typeColumn)
+            body.appendChild(row)
+        }
+
+
     </script>
 </head>
 <body>
@@ -24,10 +48,27 @@
     Create enumeration:<br>
     Name: <input name="name" type="text" required>
     <ul id="list"></ul>
-    <button type="button" onclick="onClick()">+</button>
+    <button type="button" onclick="enumOnClick()">+</button>
     <br>
     <button type="submit">Save</button>
 
+</form>
+
+<form th:action="@{'/databases/' + ${database} + '/tables'}" method="post">
+    Create table:<br>
+    Name: <input name="name" type="text" required>
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+        </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+        <button type="button" onclick="tableOnClick()">+</button>
+    </table>
+    <button type="submit">Create</button>
 </form>
 
 <div th:if="${tables.isEmpty()}">

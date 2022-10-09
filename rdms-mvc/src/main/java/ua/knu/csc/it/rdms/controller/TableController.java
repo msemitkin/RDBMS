@@ -26,12 +26,15 @@ import ua.knu.csc.it.rdms.domain.column.columntype.StringColumnType;
 import ua.knu.csc.it.rdms.dto.RowDto;
 import ua.knu.csc.it.rdms.mapper.RowMapper;
 import ua.knu.csc.it.rdms.mapper.TableSchemaMapper;
+import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
+import ua.knu.csc.it.rdms.port.input.TableColumn;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -73,6 +76,21 @@ public class TableController {
         model.addAttribute("sortingColumnOptions", columnNames);
         model.addAttribute("sortingDirectionOptions", sortingDirectionOptions);
         return "table";
+    }
+
+    @PostMapping("databases/{database}/tables")
+    public String createTable(
+        @PathVariable String database,
+        @RequestBody MultiValueMap<String, Object> formData
+    ) {
+        String tableName = (String) formData.getFirst("name");
+        List<String> columnNames = formData.get("columnName").stream().map(String.class::cast).toList();
+        List<String> columnTypes = formData.get("columnType").stream().map(String.class::cast).toList();
+        Set<TableColumn> tableColumns = zipToMap(columnNames, columnTypes).entrySet().stream()
+            .map(entry -> new TableColumn(entry.getValue(), entry.getKey()))
+            .collect(Collectors.toSet());
+        databaseManager.createTable(database, new CreateTableCommand(tableName, tableColumns));
+        return "redirect:/databases/%s".formatted(database);
     }
 
     @PostMapping("/databases/{database}/tables/{table}/delete")

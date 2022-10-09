@@ -7,7 +7,46 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+
+        form {
+            margin: 15px;
+        }
+
+        td {
+            width: 200px
+        }
     </style>
+    <script type="application/javascript">
+        function setOnClick() {
+            onClick('setTableBody', 'setColumn', 'setValue')
+        }
+
+        function whereOnclick() {
+            onClick('whereTableBody', 'whereColumn', 'whereValue')
+        }
+
+        function onClick(element, columnNameName, columnValueName) {
+            let tableBody = document.getElementById(element);
+            tableBody.appendChild(createRow(columnNameName, columnValueName))
+        }
+
+        function createRow(columnNameName, columnValueName) {
+            let row = document.createElement('tr');
+            row.appendChild(createColumn(columnNameName))
+            row.appendChild(createColumn(columnValueName))
+            return row;
+        }
+
+        function createColumn(columnName) {
+            let column = document.createElement('td');
+            let columnInput = document.createElement('input');
+            columnInput.name = columnName
+            columnInput.style.width = 'inherit'
+            column.appendChild(columnInput)
+            return column;
+        }
+
+    </script>
 </head>
 <body>
 <form th:action="@{'/databases/' + ${databaseName} + '/tables/' + ${tableName} + '/delete'}" th:method="post">
@@ -26,20 +65,57 @@
 <form th:action="@{'/databases/' + ${databaseName} + '/tables/' + ${tableName} + '/insert'}" method="post">
     <table>
         <tr>
-            <td th:each="column : ${columns}" style="width: 200px">
+            <td th:each="column : ${columns}">
                 <span th:text="${column.name}"></span>
                 <input th:name="${column.name}" type="text">
             </td>
-            <td>
+            <td style="width: auto">
                 <button type="submit">Insert</button>
             </td>
         </tr>
     </table>
 </form>
+<form th:action="@{'/databases/' + ${databaseName} + '/tables/' + ${tableName} + '/update'}" method="post"
+      style="width: 400px">
+    <table>
+        <tr>
+            <td colspan="2" style="width: 100%">WHERE</td>
+        </tr>
+        <tr>
+            <td>colname</td>
+            <td>value</td>
+        </tr>
+        <tbody id="whereTableBody">
+        <tr>
+            <td colspan="4" style="width: 100%; border: 0; padding: 0; margin: 0;">
+                <button type='button' style="width: 100%; padding: 0; margin: 0;" onclick="whereOnclick()">+</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <table>
+        <tr>
+            <td colspan="2" style="width: 400px">SET</td>
+        </tr>
+        <tr>
+            <td>colname</td>
+            <td>value</td>
+        </tr>
+        <tbody id="setTableBody">
+        <tr>
+            <td colspan="4" style="width: 100%; border: 0; padding: 0; margin: 0;">
+                <button type='button' style="width: 100%; padding: 0; margin: 0;" onclick="setOnClick()">+</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <button type="submit" style="width: 100%; padding: 0; margin: 0;">UPDATE</button>
+</form>
 <table>
     <thead>
     <tr>
-        <td th:each="column: ${columns}" th:text="${column.name}" style="width: 200px"></td>
+        <td th:each="column: ${columns}" th:text="${column.name}"></td>
     </tr>
     </thead>
     <tbody>

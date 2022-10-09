@@ -22,6 +22,11 @@ public class DatabaseController {
         this.databaseManager = databaseManager;
     }
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/databases";
+    }
+
     @GetMapping("databases")
     public String getDatabases(Model model) {
         List<Database> databases = databaseManager.getDatabases();

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import ua.knu.csc.it.rdms.domain.Row;
+import ua.knu.csc.it.rdms.domain.RowFilter;
+import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.SortDirection;
 import ua.knu.csc.it.rdms.domain.Sorting;
 import ua.knu.csc.it.rdms.domain.TableSchema;
@@ -30,6 +32,10 @@ import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -82,8 +88,63 @@ public class TableController {
         @RequestBody MultiValueMap<String, Object> formData
     ) {
         TableSchema tableSchema = databaseManager.getTableSchema(database, table);
-        databaseManager.insert(database, table, new InsertRowCommand(castMap(formData, tableSchema)));
+        databaseManager.insert(database, table, new InsertRowCommand(castMap(formData.toSingleValueMap(), tableSchema)));
         return "redirect:/databases/%s/tables/%s".formatted(database, table);
+    }
+
+    @PostMapping("/databases/{database}/tables/{table}/update")
+    public String update(
+        @PathVariable String database,
+        @PathVariable String table,
+        @RequestBody MultiValueMap<String, Object> formData
+    ) {
+        TableSchema tableSchema = databaseManager.getTableSchema(database, table);
+        RowFilter rowFilter = extractRowFilter(formData, tableSchema);
+        RowModifier rowModifier = extractRowModifier(formData, tableSchema);
+        databaseManager.update(database, table, rowFilter, rowModifier);
+        return "redirect:/databases/%s/tables/%s".formatted(database, table);
+    }
+
+    private RowFilter extractRowFilter(
+        MultiValueMap<String, Object> formData,
+        TableSchema tableSchema
+    ) {
+        Map<String, Object> filterColumnValues = zipToMap(
+            formData.get("whereColumn").stream().map(String.class::cast).map(String::trim).toList(),
+            formData.get("whereValue")
+        );
+        Map<String, Object> columnValues = castValues(filterColumnValues, tableSchema);
+        Map<String, Predicate<Object>> filter = columnValues.entrySet().stream()
+            .collect(toMap(Map.Entry::getKey, entry -> {
+                Object value = entry.getValue();
+                return o -> o.equals(value);
+            }));
+
+        return new RowFilter(filter);
+    }
+
+    private RowModifier extractRowModifier(
+        MultiValueMap<String, Object> formData,
+        TableSchema tableSchema
+    ) {
+        Map<String, Object> setColumnValues = zipToMap(
+            formData.get("setColumn").stream().map(String.class::cast).map(String::trim).toList(),
+            formData.get("setValue")
+        );
+        Map<String, Object> columnValues = castValues(setColumnValues, tableSchema);
+        Map<String, Function<Object, Object>> modifiers = columnValues.entrySet().stream()
+            .collect(toMap(Map.Entry::getKey, entry -> (o -> entry.getValue())));
+        return new RowModifier(modifiers);
+    }
+
+    private Map<String, Object> castValues(Map<String, Object> filterColumnValues, TableSchema tableSchema) {
+        return filterColumnValues.entrySet().stream()
+            .collect(toMap(Map.Entry::getKey, entry -> {
+                String columnName = entry.getKey();
+                Column column = tableSchema.getByName(columnName);
+                Object value = entry.getValue();
+                return castTo(value, column.type());
+            }));
     }
 
     private List<Row> getRows(
@@ -99,13 +160,12 @@ public class TableController {
         return databaseManager.selectAllRows(database, table);
     }
 
-    public Map<String, Object> castMap(MultiValueMap<String, Object> formData, TableSchema tableSchema) {
-        Map<String, Object> stringObjectMap = formData.toSingleValueMap();
+    public Map<String, Object> castMap(Map<String, Object> formData, TableSchema tableSchema) {
         return tableSchema.columns().stream()
             .collect(toMap(
                 Column::name,
                 column -> {
-                    Object value = stringObjectMap.get(column.name());
+                    Object value = formData.get(column.name());
                     return castTo(value, column.type());
                 }));
     }
@@ -118,7 +178,7 @@ public class TableController {
         } else if (to instanceof DoubleColumnType) {
             return castToDouble(object);
         } else if (to instanceof StringColumnType) {
-            return object.toString();
+            return object.toString().trim();
         } else if (to instanceof EmailColumnType) {
             return object.toString();
         } else if (to instanceof Enumeration) {
@@ -160,6 +220,11 @@ public class TableController {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Not supported type");
         }
+    }
+
+    public static <K, V> Map<K, V> zipToMap(List<K> keys, List<V> values) {
+        return IntStream.range(0, keys.size()).boxed()
+            .collect(Collectors.toMap(keys::get, values::get));
     }
 
 

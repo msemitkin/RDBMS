@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  description: Title
+  title: Title
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /databases:
+    get:
+      operationId: getDatabases
+      responses:
+        "200":
+          description: Successful response
+      summary: Get all databases
+      tags:
+        - databases
+components:
+  schemas: { }

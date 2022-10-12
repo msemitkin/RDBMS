@@ -206,7 +206,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     private void validateTableExists(String database, String table) {
         if (!databasePersistenceManager.existsTable(database, table)) {
-            throw new IllegalArgumentException("SaveTableCommand %s does not exist".formatted(table));
+            throw new TableDoesNotExistException(table);
         }
     }
 

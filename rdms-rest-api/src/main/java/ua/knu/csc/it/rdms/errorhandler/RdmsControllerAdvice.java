@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ua.knu.csc.it.rdms.domain.DatabaseAlreadyExistsException;
 import ua.knu.csc.it.rdms.domain.DatabaseDoesNotExistException;
 import ua.knu.csc.it.rdms.domain.TableAlreadyExistsException;
+import ua.knu.csc.it.rdms.domain.TableDoesNotExistException;
 import ua.knu.csc.it.rdms.domain.ValidationException;
 import ua.knu.csc.it.rdms.model.ErrorDto;
 
@@ -21,7 +22,7 @@ public class RdmsControllerAdvice {
     }
 
     @ExceptionHandler(DatabaseDoesNotExistException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorDto handleDatabaseDoesNotExistException(DatabaseDoesNotExistException e) {
         return new ErrorDto().message(e.getMessage());
     }
@@ -38,5 +39,11 @@ public class RdmsControllerAdvice {
     public ErrorDto handleValidationException(ValidationException e) {
         return new ErrorDto()
             .message(e.getMessage());
+    }
+
+    @ExceptionHandler(TableDoesNotExistException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorDto handleTableDoesNotExistException(TableDoesNotExistException e) {
+        return new ErrorDto().message(e.getMessage());
     }
 }

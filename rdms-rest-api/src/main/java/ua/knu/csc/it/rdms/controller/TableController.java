@@ -35,4 +35,10 @@ public class TableController implements TablesApi {
             .toList();
         return ResponseEntity.ok(new TablesDto().tables(tables));
     }
+
+    @Override
+    public ResponseEntity<Void> dropTable(String databaseName, String tableName) {
+        databaseManager.dropTable(databaseName, tableName);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

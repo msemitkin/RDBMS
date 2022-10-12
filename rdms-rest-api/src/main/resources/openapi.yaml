@@ -57,8 +57,8 @@ paths:
             application/json:
               schema:
                 $ref: './components/Tables.yaml'
-        "400":
-          description: Failed to fetch tables. Database with such name does not exist
+        "404":
+          description: Database with such name does not exist
           content:
             application/json:
               schema:
@@ -85,6 +85,41 @@ paths:
           description: Created
         "400":
           description: Failed to create table
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
+        "404":
+          description: Database does not exist
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
+
+  /databases/{databaseName}/tables/{tableName}:
+    delete:
+      operationId: dropTable
+      summary: Drop table
+      tags:
+        - tables
+      parameters:
+        - in: path
+          name: databaseName
+          schema:
+            type: string
+          required: true
+          description: Name of the database to drop the table in
+        - in: path
+          name: tableName
+          schema:
+            type: string
+          required: true
+          description: Name of the table to drop
+      responses:
+        "200":
+          description: Deleted
+        "404":
+          description: Database or table does not exist
           content:
             application/json:
               schema:

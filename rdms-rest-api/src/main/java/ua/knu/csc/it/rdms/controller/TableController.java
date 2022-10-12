@@ -1,43 +1,38 @@
 package ua.knu.csc.it.rdms.controller;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import ua.knu.csc.it.rdms.domain.TableSchema;
-import ua.knu.csc.it.rdms.dto.ColumnDto;
-import ua.knu.csc.it.rdms.dto.CreateTableDto;
-import ua.knu.csc.it.rdms.dto.TableSchemaDto;
-import ua.knu.csc.it.rdms.mapper.ColumnMapper;
+import ua.knu.csc.it.rdms.api.TablesApi;
 import ua.knu.csc.it.rdms.mapper.TableMapper;
+import ua.knu.csc.it.rdms.model.CreateTableDto;
+import ua.knu.csc.it.rdms.model.TableDto;
+import ua.knu.csc.it.rdms.model.TablesDto;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 
 import java.util.List;
 
 @RestController
-public class TableController {
+public class TableController implements TablesApi {
     private final DatabaseManager databaseManager;
 
     public TableController(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
     }
 
-    @PostMapping("/databases/{databaseName}/tables")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createTable(@PathVariable String databaseName, @RequestBody CreateTableDto createTableDto) {
+    @Override
+    public ResponseEntity<Void> createTable(String databaseName, CreateTableDto createTableDto) {
         CreateTableCommand createTableCommand = TableMapper.fromDto(createTableDto);
         databaseManager.createTable(databaseName, createTableCommand);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/databases/{databaseName}/tables/{tableName}/schema")
-    public TableSchemaDto getSchema(@PathVariable String databaseName, @PathVariable String tableName) {
-        TableSchema tableSchema = databaseManager.getTableSchema(databaseName, tableName);
-        List<ColumnDto> columns = ColumnMapper.toDtoList(tableSchema.columns());
-        return new TableSchemaDto(tableName, columns);
+    @Override
+    public ResponseEntity<TablesDto> getTables(String databaseName) {
+        List<TableDto> tables = databaseManager.getTables(databaseName).stream()
+            .map(TableMapper::toDto)
+            .toList();
+        return ResponseEntity.ok(new TablesDto().tables(tables));
     }
-
 }

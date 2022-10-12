@@ -3,12 +3,13 @@ info:
   description: Title
   title: Title
   version: 1.0.0
-servers:
-  - url: /
 paths:
   /databases:
     get:
       operationId: getDatabases
+      summary: Get all databases
+      tags:
+        - databases
       responses:
         "200":
           description: Success
@@ -16,13 +17,13 @@ paths:
             application/json:
               schema:
                 $ref: './components/Databases.yaml'
-      summary: Get all databases
-      tags:
-        - databases
     post:
       operationId: createDatabase
-      summary: Create a new database .
+      summary: Create a new database
+      tags:
+        - databases
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -36,6 +37,58 @@ paths:
             application/json:
               schema:
                 $ref: './components/Error.yaml'
-
+  /databases/{databaseName}/tables:
+    get:
+      operationId: getTables
+      summary: Get tables
+      tags:
+        - tables
+      parameters:
+        - in: path
+          name: databaseName
+          schema:
+            type: string
+          required: true
+          description: Name of the database to get tables
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './components/Tables.yaml'
+        "400":
+          description: Failed to fetch tables. Database with such name does not exist
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
+    post:
+      operationId: Create table
+      summary: Create a table in the database
+      tags:
+        - tables
+      parameters:
+        - in: path
+          name: databaseName
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './components/CreateTable.yaml'
+      responses:
+        "200":
+          description: Created
+        "400":
+          description: Failed to create table
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
 components:
   schemas: { }
+  #TODO multiple error responses

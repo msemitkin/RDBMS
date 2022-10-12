@@ -1,0 +1,8 @@
+type: object
+properties:
+  tables:
+    type: array
+    items:
+      $ref: './Table.yaml'
+required:
+  - tables

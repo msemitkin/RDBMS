@@ -1,0 +1,11 @@
+type: object
+properties:
+  name:
+    type: string
+  columns:
+    type: array
+    items:
+      $ref: './CreateColumn.yaml'
+required:
+  - name
+  - columns

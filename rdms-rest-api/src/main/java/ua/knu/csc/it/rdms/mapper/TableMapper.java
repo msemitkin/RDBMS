@@ -1,7 +1,9 @@
 package ua.knu.csc.it.rdms.mapper;
 
-import ua.knu.csc.it.rdms.dto.CreateColumnDto;
-import ua.knu.csc.it.rdms.dto.CreateTableDto;
+import ua.knu.csc.it.rdms.domain.Table;
+import ua.knu.csc.it.rdms.model.CreateColumnDto;
+import ua.knu.csc.it.rdms.model.CreateTableDto;
+import ua.knu.csc.it.rdms.model.TableDto;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.TableColumn;
 
@@ -11,6 +13,11 @@ import java.util.stream.Collectors;
 public class TableMapper {
 
     private TableMapper() {
+    }
+
+    public static TableDto toDto(Table table) {
+        return new TableDto()
+            .name(table.name());
     }
 
     public static CreateTableCommand fromDto(CreateTableDto createTableDto) {

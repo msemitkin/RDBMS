@@ -14,6 +14,7 @@ import ua.knu.csc.it.rdms.domain.validator.RowValidator;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
+import ua.knu.csc.it.rdms.port.input.TableColumn;
 import ua.knu.csc.it.rdms.port.output.CustomColumnTypePersistenceManager;
 import ua.knu.csc.it.rdms.port.output.DatabasePersistenceManager;
 import ua.knu.csc.it.rdms.port.output.SaveTableCommand;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static java.util.function.Predicate.not;
 import static java.util.stream.Collectors.toMap;
 
 @Service
@@ -67,7 +69,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
     @Override
     public void createTable(@Nonnull String database, CreateTableCommand createTableCommand) {
         validateDatabaseExists(database);
-        validateTableDoesNotExist(database, createTableCommand);
+        validateTable(database, createTableCommand);
         ColumnTypes supportedColumnTypes = getSupportedColumnTypes(database);
         Set<Column> columns = getColumns(createTableCommand, supportedColumnTypes);
         databasePersistenceManager.saveTable(
@@ -76,8 +78,28 @@ public class DatabaseManagerImpl implements DatabaseManager {
         );
     }
 
+    private void validateTable(String database, CreateTableCommand createTableCommand) {
+        if (createTableCommand.name().isBlank()) {
+            throw new ValidationException("Table name must be not blank");
+        }
+
+        validateTableDoesNotExist(database, createTableCommand);
+
+        Set<String> supportedColumnTypes = getSupportedColumnTypes(database).columnTypes().stream()
+            .map(ColumnType::getTypeName)
+            .collect(Collectors.toSet());
+        createTableCommand.tableColumns().stream()
+            .map(TableColumn::type)
+            .filter(not(supportedColumnTypes::contains))
+            .findAny()
+            .ifPresent(notSupportedType -> {
+                throw new ValidationException("Type %s is not supported".formatted(notSupportedType));
+            });
+    }
+
     @Override
     public List<Table> getTables(String database) {
+        validateDatabaseExists(database);
         return databasePersistenceManager.getTables(database);
     }
 
@@ -171,7 +193,7 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     private void validateDatabase(Database database) {
         if (database.name().isBlank()) {
-            throw new ValidationException("Database name must be not empty");
+            throw new ValidationException("Database name must be not blank");
         }
         validateDatabaseDoesNotExist(database);
     }

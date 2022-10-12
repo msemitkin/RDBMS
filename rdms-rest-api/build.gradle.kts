@@ -13,6 +13,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:2.7.4")
     implementation("org.springdoc:springdoc-openapi-ui:1.6.4")
     implementation("org.openapitools:jackson-databind-nullable:0.2.3")
+    implementation("org.springframework.boot:spring-boot-starter-validation:2.7.4")
 }
 
 tasks.getByName<Test>("test") {
@@ -34,7 +35,9 @@ openApiGenerate {
         mutableMapOf(
             "basePackage" to "ua.knu.csc.it.rdms",
             "configPackage" to "ua.knu.csc.it.rdms.configuration",
-            "interfaceOnly" to "true"
+            "interfaceOnly" to "true",
+            "useTags" to "true",
+            "performBeanValidation" to "true"
 //            "hateoas" to "false"
         )
     )
@@ -48,7 +51,6 @@ tasks.getByName("openApiGenerate") {
         delete(
             "$generatedSourcesDir/.openapi-generator",
             "$generatedSourcesDir/.openapi-generator-ignore",
-            "$generatedSourcesDir/pom.xml",
             "$generatedSourcesDir/README.md"
         )
     }

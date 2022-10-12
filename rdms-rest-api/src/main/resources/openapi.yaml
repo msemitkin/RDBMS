@@ -32,6 +32,10 @@ paths:
           description: Created
         "400":
           description: Failed to create a database. Database is invalid
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
 
 components:
   schemas: { }

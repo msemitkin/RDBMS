@@ -29,13 +29,29 @@ openApiGenerate {
     packageName.set("ua.knu.csc.it.rdms")
     apiPackage.set("ua.knu.csc.it.rdms.api")
     modelPackage.set("ua.knu.csc.it.rdms.model")
+    modelNameSuffix.set("Dto")
     configOptions.set(
         mutableMapOf(
             "basePackage" to "ua.knu.csc.it.rdms",
             "configPackage" to "ua.knu.csc.it.rdms.configuration",
-            "hateoas" to "false"
+            "interfaceOnly" to "true"
+//            "hateoas" to "false"
         )
     )
+}
+
+tasks.getByName("openApiGenerate") {
+    doFirst {
+        delete(generatedSourcesDir)
+    }
+    doLast {
+        delete(
+            "$generatedSourcesDir/.openapi-generator",
+            "$generatedSourcesDir/.openapi-generator-ignore",
+            "$generatedSourcesDir/pom.xml",
+            "$generatedSourcesDir/README.md"
+        )
+    }
 }
 
 sourceSets {

@@ -59,7 +59,8 @@ public class DatabaseManagerImpl implements DatabaseManager {
 
     @Override
     public void createDatabase(@Nonnull String name) {
-        validateDatabaseDoesNotExist(name);
+        Database database = preprocessDatabase(new Database(name));
+        validateDatabase(database);
         databasePersistenceManager.saveDatabase(name);
     }
 
@@ -164,9 +165,20 @@ public class DatabaseManagerImpl implements DatabaseManager {
         }
     }
 
-    private void validateDatabaseDoesNotExist(String name) {
-        if (databasePersistenceManager.existsDatabase(name)) {
-            throw new DatabaseAlreadyExistsException(name);
+    private Database preprocessDatabase(@Nonnull Database database) {
+        return new Database(database.name().trim());
+    }
+
+    private void validateDatabase(Database database) {
+        if (database.name().isBlank()) {
+            throw new ValidationException("Database name must be not empty");
+        }
+        validateDatabaseDoesNotExist(database);
+    }
+
+    private void validateDatabaseDoesNotExist(Database database) {
+        if (databasePersistenceManager.existsDatabase(database.name())) {
+            throw new DatabaseAlreadyExistsException(database.name());
         }
     }
 

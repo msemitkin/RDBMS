@@ -1,20 +1,18 @@
 package ua.knu.csc.it.rdms.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import ua.knu.csc.it.rdms.domain.Database;
-import ua.knu.csc.it.rdms.dto.CreateDatabaseDto;
-import ua.knu.csc.it.rdms.dto.DatabaseDto;
+import ua.knu.csc.it.rdms.api.DatabasesApi;
+import ua.knu.csc.it.rdms.mapper.DatabaseMapper;
+import ua.knu.csc.it.rdms.model.CreateDatabaseDto;
+import ua.knu.csc.it.rdms.model.DatabaseDto;
+import ua.knu.csc.it.rdms.model.DatabasesDto;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 
 import java.util.List;
 
 @RestController
-public class DatabaseController {
+public class DatabaseController implements DatabasesApi {
 
     private final DatabaseManager databaseManager;
 
@@ -22,19 +20,17 @@ public class DatabaseController {
         this.databaseManager = databaseManager;
     }
 
-    @PostMapping("/databases")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createDatabase(@RequestBody CreateDatabaseDto createDatabaseDto) {
+    @Override
+    public ResponseEntity<Void> createDatabase(CreateDatabaseDto createDatabaseDto) {
         databaseManager.createDatabase(createDatabaseDto.getName());
+        return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/databases")
-    public List<DatabaseDto> getDatabases() {
-        List<Database> databases = databaseManager.getDatabases();
-        return databases.stream().map(this::toDto).toList();
+    @Override
+    public ResponseEntity<DatabasesDto> getDatabases() {
+        List<DatabaseDto> databases = databaseManager.getDatabases()
+            .stream().map(DatabaseMapper::toDto).toList();
+        return ResponseEntity.ok(new DatabasesDto().databases(databases));
     }
 
-    private DatabaseDto toDto(Database database) {
-        return new DatabaseDto(database.name());
-    }
 }

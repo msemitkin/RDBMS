@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ua.knu.csc.it.rdms.domain.DatabaseAlreadyExistsException;
 import ua.knu.csc.it.rdms.domain.TableAlreadyExistsException;
+import ua.knu.csc.it.rdms.domain.ValidationException;
 
 @RestControllerAdvice
 public class RdmsControllerAdvice {
@@ -20,5 +21,11 @@ public class RdmsControllerAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorDto handleTableAlreadyExistsException(TableAlreadyExistsException e) {
         return new ErrorDto("Table %s already exists".formatted(e.getName()));
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleValidationException(ValidationException e) {
+        return new ErrorDto(e.getMessage());
     }
 }

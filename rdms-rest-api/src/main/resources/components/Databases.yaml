@@ -1,0 +1,8 @@
+type: object
+properties:
+  databases:
+    type: array
+    items:
+      $ref: './Database.yaml'
+required:
+  - databases

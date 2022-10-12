@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  description: Title
+  title: Title
+  version: 1.0.0
+servers:
+  - url: /
+paths:
+  /databases:
+    get:
+      operationId: getDatabases
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: './components/Databases.yaml'
+      summary: Get all databases
+      tags:
+        - databases
+    post:
+      operationId: createDatabase
+      summary: Create a new database .
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: './components/CreateDatabase.yaml'
+      responses:
+        "200":
+          description: Created
+        "400":
+          description: Failed to create a database. Database is invalid
+
+components:
+  schemas: { }

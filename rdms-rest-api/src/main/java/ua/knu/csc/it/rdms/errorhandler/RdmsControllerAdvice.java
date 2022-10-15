@@ -9,6 +9,8 @@ import ua.knu.csc.it.rdms.domain.DatabaseDoesNotExistException;
 import ua.knu.csc.it.rdms.domain.TableAlreadyExistsException;
 import ua.knu.csc.it.rdms.domain.TableDoesNotExistException;
 import ua.knu.csc.it.rdms.domain.ValidationException;
+import ua.knu.csc.it.rdms.domain.validator.ColumnTypeMismatchException;
+import ua.knu.csc.it.rdms.model.ColumnTypeMismatchErrorDto;
 import ua.knu.csc.it.rdms.model.ErrorDto;
 
 @RestControllerAdvice
@@ -39,6 +41,14 @@ public class RdmsControllerAdvice {
     public ErrorDto handleValidationException(ValidationException e) {
         return new ErrorDto()
             .message(e.getMessage());
+    }
+
+    @ExceptionHandler(ColumnTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ColumnTypeMismatchErrorDto handleColumnTypeMismatchException(ColumnTypeMismatchException e) {
+        return new ColumnTypeMismatchErrorDto()
+            .columnName(e.getColumn())
+            .expectedType(e.getExpectedType());
     }
 
     @ExceptionHandler(TableDoesNotExistException.class)

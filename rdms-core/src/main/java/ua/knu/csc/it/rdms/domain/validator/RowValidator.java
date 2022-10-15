@@ -24,7 +24,7 @@ public class RowValidator {
         if (!rowColumnsAreValid) {
             throw new IllegalArgumentException("Row not match with schema");
         }
-        row.values().forEach((column, value) -> columnValidator.validate(value, column.type()));
+        row.values().forEach((column, value) -> columnValidator.validate(value, column));
     }
 
 }

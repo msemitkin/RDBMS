@@ -97,6 +97,47 @@ paths:
                 $ref: './components/Error.yaml'
 
   /databases/{databaseName}/tables/{tableName}:
+    put:
+      operationId: insert
+      summary: Insert row into the table
+      tags:
+        - tables
+      parameters:
+        - in: path
+          name: databaseName
+          schema:
+            type: string
+          required: true
+          description: Name of the database to insert into the table in
+        - in: path
+          name: tableName
+          schema:
+            type: string
+          required: true
+          description: Name of the table to insert into
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Insert'
+      responses:
+        "200":
+          description: Inserted
+        "400":
+          description: Failed to insert into a table. Row is invalid
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: './components/Error.yaml'
+                  - $ref: './components/ColumnTypeMismatchError.yaml'
+        "404":
+          description: Database or table does not exist
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
     delete:
       operationId: dropTable
       summary: Drop table
@@ -125,5 +166,8 @@ paths:
               schema:
                 $ref: './components/Error.yaml'
 components:
-  schemas: { }
+  schemas:
+    Insert:
+      type: object
+      additionalProperties: true
   #TODO multiple error responses

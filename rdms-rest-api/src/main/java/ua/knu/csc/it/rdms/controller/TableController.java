@@ -10,8 +10,10 @@ import ua.knu.csc.it.rdms.model.TableDto;
 import ua.knu.csc.it.rdms.model.TablesDto;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
+import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class TableController implements TablesApi {
@@ -25,6 +27,17 @@ public class TableController implements TablesApi {
     public ResponseEntity<Void> createTable(String databaseName, CreateTableDto createTableDto) {
         CreateTableCommand createTableCommand = TableMapper.fromDto(createTableDto);
         databaseManager.createTable(databaseName, createTableCommand);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> insert(
+        String databaseName,
+        String tableName,
+        Map<String, Object> requestBody
+    ) {
+        InsertRowCommand insertRowCommand = new InsertRowCommand(requestBody);
+        databaseManager.insert(databaseName, tableName, insertRowCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

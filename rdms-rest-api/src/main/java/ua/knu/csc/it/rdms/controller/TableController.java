@@ -4,16 +4,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import ua.knu.csc.it.rdms.api.TablesApi;
+import ua.knu.csc.it.rdms.domain.RowFilter;
+import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.mapper.TableMapper;
 import ua.knu.csc.it.rdms.model.CreateTableDto;
 import ua.knu.csc.it.rdms.model.TableDto;
 import ua.knu.csc.it.rdms.model.TablesDto;
+import ua.knu.csc.it.rdms.model.UpdateDto;
 import ua.knu.csc.it.rdms.port.input.CreateTableCommand;
 import ua.knu.csc.it.rdms.port.input.DatabaseManager;
 import ua.knu.csc.it.rdms.port.input.InsertRowCommand;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toMap;
 
 @RestController
 public class TableController implements TablesApi {
@@ -42,6 +49,19 @@ public class TableController implements TablesApi {
     }
 
     @Override
+    public ResponseEntity<Void> update(String databaseName, String tableName, UpdateDto updateDto) {
+        Map<String, Object> where = updateDto.getWhere();
+        Map<String, Object> set = updateDto.getSet();
+        databaseManager.update(
+            databaseName,
+            tableName,
+            extractRowFilter(where),
+            extractRowModifier(set)
+        );
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<TablesDto> getTables(String databaseName) {
         List<TableDto> tables = databaseManager.getTables(databaseName).stream()
             .map(TableMapper::toDto)
@@ -53,5 +73,20 @@ public class TableController implements TablesApi {
     public ResponseEntity<Void> dropTable(String databaseName, String tableName) {
         databaseManager.dropTable(databaseName, tableName);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private RowFilter extractRowFilter(Map<String, Object> data) {
+        Map<String, Predicate<Object>> filter = data.entrySet().stream()
+            .collect(toMap(Map.Entry::getKey, entry -> {
+                Object value = entry.getValue();
+                return o -> o.equals(value);
+            }));
+        return new RowFilter(filter);
+    }
+
+    private RowModifier extractRowModifier(Map<String, Object> data) {
+        Map<String, Function<Object, Object>> modifiers = data.entrySet().stream()
+            .collect(toMap(Map.Entry::getKey, entry -> (o -> entry.getValue())));
+        return new RowModifier(modifiers);
     }
 }

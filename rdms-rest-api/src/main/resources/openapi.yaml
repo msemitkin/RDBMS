@@ -138,6 +138,45 @@ paths:
             application/json:
               schema:
                 $ref: './components/Error.yaml'
+    patch:
+      operationId: update
+      summary: Update table
+      tags:
+        - tables
+      parameters:
+        - in: path
+          name: databaseName
+          schema:
+            type: string
+          required: true
+          description: Name of the database to update the table in
+        - in: path
+          name: tableName
+          schema:
+            type: string
+          required: true
+          description: Name of the table to update the rows in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Update'
+      responses:
+        "200":
+          description: Updated
+        "400":
+          description: Failed to update table. Request is invalid
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
+        "404":
+          description: Database or table does not exist
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
     delete:
       operationId: dropTable
       summary: Drop table
@@ -168,6 +207,21 @@ paths:
 components:
   schemas:
     Insert:
+      type: object
+      additionalProperties: true
+    Update:
+      properties:
+        where:
+          $ref: '#/components/schemas/Where'
+        set:
+          $ref: '#/components/schemas/Set'
+      required:
+        - where
+        - set
+    Where:
+      type: object
+      additionalProperties: true
+    Set:
       type: object
       additionalProperties: true
   #TODO multiple error responses

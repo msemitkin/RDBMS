@@ -97,6 +97,42 @@ paths:
                 $ref: './components/Error.yaml'
 
   /databases/{databaseName}/tables/{tableName}:
+    get:
+      operationId: select
+      summary: Select rows from the table
+      tags:
+        - tables
+      parameters:
+        - in: path
+          name: databaseName
+          schema:
+            type: string
+          required: true
+          description: Name of the database to select data from
+        - in: path
+          name: tableName
+          schema:
+            type: string
+          required: true
+          description: Name of the table to select rows from
+        - in: query
+          name: sorting
+          schema:
+            $ref: '#/components/schemas/Sorting'
+          required: true
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Rows'
+        "404":
+          description: Database or table does not exist
+          content:
+            application/json:
+              schema:
+                $ref: './components/Error.yaml'
     put:
       operationId: insert
       summary: Insert row into the table
@@ -224,4 +260,38 @@ components:
     Set:
       type: object
       additionalProperties: true
-  #TODO multiple error responses
+    ColumnValue:
+      type: object
+      properties:
+        columnName:
+          type: string
+        value:
+          type: object
+    Row:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/ColumnValue'
+    Rows:
+      type: object
+      properties:
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/Row'
+    Sorting:
+      type: object
+      properties:
+        sortingColumn:
+          type: string
+        sortingOrder:
+          type: string
+          enum:
+            - ASC
+            - DESC
+      required:
+        - sortingOrder
+        - sortingColumn
+      #TODO multiple error responses

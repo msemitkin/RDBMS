@@ -9,6 +9,8 @@ import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.SortDirection;
 import ua.knu.csc.it.rdms.domain.Sorting;
+import ua.knu.csc.it.rdms.domain.Table;
+import ua.knu.csc.it.rdms.domain.TableSchema;
 import ua.knu.csc.it.rdms.mapper.InsertRowCommandMapper;
 import ua.knu.csc.it.rdms.mapper.RowMapper;
 import ua.knu.csc.it.rdms.mapper.TableMapper;
@@ -71,10 +73,13 @@ public class TableController implements TablesApi {
 
     @Override
     public ResponseEntity<TablesDto> getTables(String databaseName) {
-        List<TableDto> tables = databaseManager.getTables(databaseName).stream()
-            .map(TableMapper::toDto)
-            .toList();
-        return ResponseEntity.ok(new TablesDto().tables(tables));
+        List<Table> tables = databaseManager.getTables(databaseName);
+        List<TableDto> tableDtos = tables.stream().map(table -> {
+            String name = table.name();
+            TableSchema tableSchema = databaseManager.getTableSchema(databaseName, name);
+            return TableMapper.toDto(table, tableSchema);
+        }).toList();
+        return ResponseEntity.ok(new TablesDto().tables(tableDtos));
     }
 
     @Override

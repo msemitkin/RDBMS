@@ -2,5 +2,10 @@ type: object
 properties:
   name:
     type: string
+  schema:
+    type: array
+    items:
+      $ref: './Column.yaml'
 required:
   - name
+  - schema

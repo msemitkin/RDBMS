@@ -9,9 +9,11 @@ import ua.knu.csc.it.rdms.domain.RowFilter;
 import ua.knu.csc.it.rdms.domain.RowModifier;
 import ua.knu.csc.it.rdms.domain.SortDirection;
 import ua.knu.csc.it.rdms.domain.Sorting;
+import ua.knu.csc.it.rdms.mapper.InsertRowCommandMapper;
 import ua.knu.csc.it.rdms.mapper.RowMapper;
 import ua.knu.csc.it.rdms.mapper.TableMapper;
 import ua.knu.csc.it.rdms.model.CreateTableDto;
+import ua.knu.csc.it.rdms.model.InsertDto;
 import ua.knu.csc.it.rdms.model.RowsDto;
 import ua.knu.csc.it.rdms.model.SortingDto;
 import ua.knu.csc.it.rdms.model.TableDto;
@@ -47,9 +49,9 @@ public class TableController implements TablesApi {
     public ResponseEntity<Void> insert(
         String databaseName,
         String tableName,
-        Map<String, Object> requestBody
+        InsertDto insertDto
     ) {
-        InsertRowCommand insertRowCommand = new InsertRowCommand(requestBody);
+        InsertRowCommand insertRowCommand = InsertRowCommandMapper.fromDto(insertDto);
         databaseManager.insert(databaseName, tableName, insertRowCommand);
         return new ResponseEntity<>(HttpStatus.OK);
     }

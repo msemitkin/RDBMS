@@ -8,6 +8,7 @@ import ua.knu.csc.it.rdms.domain.DatabaseAlreadyExistsException;
 import ua.knu.csc.it.rdms.domain.DatabaseDoesNotExistException;
 import ua.knu.csc.it.rdms.domain.TableAlreadyExistsException;
 import ua.knu.csc.it.rdms.domain.TableDoesNotExistException;
+import ua.knu.csc.it.rdms.domain.UnknownColumnException;
 import ua.knu.csc.it.rdms.domain.ValidationException;
 import ua.knu.csc.it.rdms.domain.validator.ColumnTypeMismatchException;
 import ua.knu.csc.it.rdms.model.ColumnTypeMismatchErrorDto;
@@ -49,6 +50,13 @@ public class RdmsControllerAdvice {
         return new ColumnTypeMismatchErrorDto()
             .columnName(e.getColumn())
             .expectedType(e.getExpectedType());
+    }
+
+    @ExceptionHandler(UnknownColumnException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorDto handleUnknownColumnException(UnknownColumnException e) {
+        return new ErrorDto()
+            .message("Unknown column: %s".formatted(e.getColumnName()));
     }
 
     @ExceptionHandler(TableDoesNotExistException.class)

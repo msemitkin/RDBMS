@@ -9,6 +9,6 @@ public record TableSchema(Set<Column> columns) {
         return columns.stream()
             .filter(column -> column.name().equals(name))
             .findAny()
-            .orElseThrow(() -> new IllegalArgumentException("Invalid column name: %s".formatted(name)));
+            .orElseThrow(() -> new UnknownColumnException("Invalid column name: %s".formatted(name)));
     }
 }

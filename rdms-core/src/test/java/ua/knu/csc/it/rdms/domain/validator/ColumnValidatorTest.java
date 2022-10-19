@@ -30,7 +30,7 @@ class ColumnValidatorTest {
         Column column = new Column(columnType, "test");
 
         Assertions.assertThrows(
-            IllegalArgumentException.class,
+            ColumnTypeMismatchException.class,
             () -> columnValidator.validate("MONDAY", column)
         );
     }
@@ -41,7 +41,7 @@ class ColumnValidatorTest {
         Column column = new Column(columnType, "test");
 
         Assertions.assertThrows(
-            IllegalArgumentException.class,
+            ColumnTypeMismatchException.class,
             () -> columnValidator.validate("Not integer value", column)
         );
     }
@@ -60,7 +60,7 @@ class ColumnValidatorTest {
         Column column = new Column(columnType, "test");
 
         Assertions.assertThrows(
-            IllegalArgumentException.class,
+            ColumnTypeMismatchException.class,
             () -> columnValidator.validate("email@foobar", column)
         );
     }

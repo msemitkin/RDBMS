@@ -118,7 +118,7 @@ class DatabaseManagerImplTest {
         when(databasePersistenceManager.getAllRows(databaseName, tableName)).thenReturn(emptyList());
         Sorting sorting = new Sorting("abc", SortDirection.DESC);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> databaseManager
+        Assertions.assertThrows(UnknownColumnException.class, () -> databaseManager
             .selectAllRows(databaseName, tableName, sorting));
     }
 

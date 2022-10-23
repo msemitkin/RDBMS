@@ -24,7 +24,7 @@ val generatedSourcesDir = "$buildDir/generated/openapi"
 
 openApiGenerate {
     validateSpec.set(true)
-    inputSpec.set("${project.projectDir}/src/main/resources/openapi.yaml")
+    inputSpec.set("${project.projectDir}/../rdms-openapi/src/main/resources/openapi.yaml")
     generatorName.set("spring")
     outputDir.set(generatedSourcesDir)
     packageName.set("ua.knu.csc.it.rdms")

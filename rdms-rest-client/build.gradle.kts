@@ -12,9 +12,10 @@ repositories {
 }
 
 dependencies {
-    implementation("org.openjfx:javafx:11")
+    implementation("org.openjfx:javafx-graphics:19")
     implementation("org.springframework.boot:spring-boot-starter:2.7.4")
-    implementation("org.springframework:spring-web:5.3.23")
+    implementation("org.springframework.boot:spring-boot-starter-webflux:2.7.4")
+    implementation("org.springframework.boot:spring-boot-starter-validation:2.7.4")
     implementation("io.swagger:swagger-annotations:1.5.22")
     implementation("org.openapitools:jackson-databind-nullable:0.2.3")
     implementation("com.google.code.findbugs:jsr305:3.0.2")
@@ -39,7 +40,7 @@ openApiGenerate {
     modelNameSuffix.set("Dto")
     configOptions.set(
         mutableMapOf(
-            "library" to "resttemplate",
+            "library" to "webclient",
             "performBeanValidation" to "true"
         )
     )

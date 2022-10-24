@@ -2,9 +2,6 @@ plugins {
     id("java-library")
 }
 
-group = "ua.knu.csc.it"
-version = "1.0-SNAPSHOT"
-
 repositories {
     mavenCentral()
 }

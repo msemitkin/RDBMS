@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import ua.knu.csc.it.rdms.ApiClient;
 import ua.knu.csc.it.rdms.api.DatabasesApi;
+import ua.knu.csc.it.rdms.api.TablesApi;
 
 @Configuration
 public class ApiClientConfig {
@@ -26,5 +27,10 @@ public class ApiClientConfig {
     @Bean
     public DatabasesApi databasesApi(ApiClient apiClient) {
         return new DatabasesApi(apiClient);
+    }
+
+    @Bean
+    public TablesApi tablesApi(ApiClient apiClient) {
+        return new TablesApi(apiClient);
     }
 }
